@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="D3D11">
+      <UniqueIdentifier>{7f1e695a-8ec1-4647-9cbc-c8638f66399c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="BlendState.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11SubResData.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencilState.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencilView.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="InputLayout.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="RasterizerState.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetView.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplerState.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderResourceView.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChain.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Ptr.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Desc.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelShader.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Keys.h" />
+    <ClInclude Include="NonCopyable.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="BlendState.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11SubResData.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthStencilState.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthStencilView.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="InputLayout.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="PixelShader.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="RasterizerState.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetView.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="SamplerState.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderResourceView.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexShader.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D3D11Desc.inl">
+      <Filter>D3D11</Filter>
+    </None>
+    <None Include="D3D11Ptr.inl">
+      <Filter>D3D11</Filter>
+    </None>
+  </ItemGroup>
+</Project>
