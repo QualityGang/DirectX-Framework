@@ -64,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="Keys.h" />
     <ClInclude Include="NonCopyable.h" />
+    <ClInclude Include="Window.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -111,6 +114,9 @@
       <Filter>D3D11</Filter>
     </ClCompile>
     <ClCompile Include="VertexShader.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
   </ItemGroup>
