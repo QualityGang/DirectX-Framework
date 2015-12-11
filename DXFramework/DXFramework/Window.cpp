@@ -1,11 +1,13 @@
-#include "Window.h"
 #include "stdafx.h"
+#include "Window.h"
+
+#define IsMenuActiveByAlt(lParam) ((lParam >> 16) <= 0)
+
+bool Window::initialized = false;
 
 LRESULT Window::msgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	Window* window = 0;
-
-	window = getWindow(hwnd);
+	Window *window = getWindow(hwnd);
 
 	switch (msg)
 	{
@@ -16,10 +18,16 @@ LRESULT Window::msgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_GETMINMAXINFO:
-		LPMINMAXINFO MMI = (LPMINMAXINFO)lParam;
-		MMI->ptMinTrackSize.x = window->getMinSize().x;
-		MMI->ptMinTrackSize.y = window->getMinSize().y;
-		break;
+	{
+		if (!window)
+		{
+			return DefWindowProc(hwnd, msg, wParam, lParam);
+		}
+
+		LPMINMAXINFO mmi = (LPMINMAXINFO)lParam;
+		mmi->ptMinTrackSize.x = window->getMinSize().x;
+		mmi->ptMinTrackSize.y = window->getMinSize().y;
+	} break;
 
 	case WM_SIZE:
 		break;
@@ -29,8 +37,8 @@ LRESULT Window::msgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_SYSCOMMAND:
-		if (wParam == SC_KEYMENU && IsMenuActiveByAlt) return 0;
-		break;
+		if (wParam == SC_KEYMENU && IsMenuActiveByAlt(lParam)) return 0;
+		return DefWindowProc(hwnd, msg, wParam, lParam);
 
 	default:
 		return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -39,23 +47,31 @@ LRESULT Window::msgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-Window::Window(HINSTANCE instance, LPCSTR title, int width, int height) : title(title), size({width,height})
+Window::Window(LPCSTR title, int width, int height) : 
+	title(title), 
+	size({width,height})
 {
+	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(nullptr);
 
-	WNDCLASSEX wc;
-	ZeroMemory(&wc, sizeof(wc));
+	if (!initialized)
+	{
+		WNDCLASSEX wcex;
+		ZeroMemory(&wcex, sizeof(wcex));
 
-	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.hInstance = instance;
-	wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-	wc.lpszClassName = "Window";
-	wc.style = CS_VREDRAW | CS_HREDRAW;
-	wc.lpfnWndProc = msgProc;
+		wcex.cbSize = sizeof(wcex);
+		wcex.hInstance = hInstance;
+		wcex.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+		wcex.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+		wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+		wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+		wcex.lpszClassName = "Window";
+		wcex.style = CS_VREDRAW | CS_HREDRAW;
+		wcex.lpfnWndProc = msgProc;
 
-	RegisterClassEx(&wc);
+		RegisterClassEx(&wcex);
+
+		initialized = true;
+	}
 
 	RECT wr = { 0, 0, size.x, size.y };
 
@@ -71,21 +87,21 @@ Window::Window(HINSTANCE instance, LPCSTR title, int width, int height) : title(
 							wr.bottom - wr.top,
 							nullptr,
 							nullptr,
-							instance,
+							hInstance,
 							nullptr);
 
 	SetWindowLong(handle, GWL_USERDATA, (LONG)this);
 
 	if (!handle)
-		throw std::invalid_argument("Window Not Created");
+		throw std::exception("Window Not Created");
 
 	ShowWindow(handle, SW_SHOW);
 }
 
 
-XMINT2 Window::getMousePosition()
+const XMINT2& Window::getMousePosition()
 {
-	return { mousePosition.x, mousePosition.y };
+	return mousePosition;
 }
 
 void Window::setTitle(LPCSTR title)
@@ -115,20 +131,28 @@ void Window::setMaximizable(bool maximizable)
 
 Window* Window::getWindow(HWND hwnd)
 {
-	return (Window*)GetWindowLong(hwnd, -21);
+	return (Window*)GetWindowLong(hwnd, GWL_USERDATA);
 }
 
-LPCSTR Window::getTitle()
+std::string Window::getTitle()
 {
-	return title;
+	int titleLen = GetWindowTextLength(handle) + 1;
+
+	char *title = new char[titleLen];
+	GetWindowText(handle, title, titleLen);
+
+	std::string strTitle(title);
+	delete title;
+
+	return strTitle;
 }
 
-XMINT2& Window::getSize()
+const XMINT2& Window::getSize()
 {
 	return size;
 }
 
-XMINT2& Window::getMinSize()
+const XMINT2& Window::getMinSize()
 {
 	return minSize;
 }
@@ -145,6 +169,6 @@ bool Window::isMaximizable()
 
 HWND Window::getHandle()
 {
-	return (HWND)GetModuleHandle(nullptr);
+	return handle;
 }
 

@@ -4,7 +4,6 @@
 #define NOMINMAX
 #include <Windows.h>
 
-#include <Windows.h>
 #include <wrl\client.h>
 //#include <wrl.h>
 
