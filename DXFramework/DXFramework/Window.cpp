@@ -4,6 +4,7 @@
 #define IsMenuActiveByAlt(lParam) ((lParam >> 16) <= 0)
 
 bool Window::initialized = false;
+UINT Window::windowCount = 0;
 
 LRESULT Window::msgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -33,7 +34,13 @@ LRESULT Window::msgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_DESTROY:
-		PostQuitMessage(0);
+		window->handle = nullptr;
+
+		if (--windowCount == 0)
+		{
+			PostQuitMessage(0);
+		}
+
 		break;
 
 	case WM_SYSCOMMAND:
@@ -77,24 +84,25 @@ Window::Window(LPCSTR title, int width, int height) :
 
 	BF(AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE));
 
-	handle = CreateWindowEx(NULL,
-							"Window",
-							title,
-							WS_OVERLAPPEDWINDOW,
-							CW_USEDEFAULT,
-							CW_USEDEFAULT,
-							wr.right - wr.left,
-							wr.bottom - wr.top,
-							nullptr,
-							nullptr,
-							hInstance,
-							nullptr);
+	handle = CreateWindow("Window",
+						  title,
+						  WS_OVERLAPPEDWINDOW,
+						  CW_USEDEFAULT,
+						  CW_USEDEFAULT,
+						  wr.right - wr.left,
+						  wr.bottom - wr.top,
+						  nullptr,
+						  nullptr,
+						  hInstance,
+						  nullptr);
 
 	BF(handle);
 
 	SetWindowLong(handle, GWL_USERDATA, (LONG)this);
 
 	ShowWindow(handle, SW_SHOW);
+
+	windowCount++;
 }
 
 

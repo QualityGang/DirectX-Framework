@@ -38,6 +38,7 @@ private:
 	SwapChain swapChain;
 
 	static bool initialized;
+	static UINT windowCount;
 
 	static LRESULT CALLBACK msgProc(HWND hwnd,
 									UINT msg,
