@@ -68,14 +68,14 @@ Window::Window(LPCSTR title, int width, int height) :
 		wcex.style = CS_VREDRAW | CS_HREDRAW;
 		wcex.lpfnWndProc = msgProc;
 
-		RegisterClassEx(&wcex);
+		BF(RegisterClassEx(&wcex));
 
 		initialized = true;
 	}
 
 	RECT wr = { 0, 0, size.x, size.y };
 
-	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
+	BF(AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE));
 
 	handle = CreateWindowEx(NULL,
 							"Window",
@@ -90,10 +90,9 @@ Window::Window(LPCSTR title, int width, int height) :
 							hInstance,
 							nullptr);
 
-	SetWindowLong(handle, GWL_USERDATA, (LONG)this);
+	BF(handle);
 
-	if (!handle)
-		throw std::exception("Window Not Created");
+	SetWindowLong(handle, GWL_USERDATA, (LONG)this);
 
 	ShowWindow(handle, SW_SHOW);
 }

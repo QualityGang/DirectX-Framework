@@ -31,4 +31,5 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "freetype255.lib")
 #endif
 
+#define BF(b) if (!b) throw std::exception()
 #define HR(hr) if (FAILED(hr)) throw std::exception()
