@@ -106,6 +106,15 @@ Window::Window(LPCSTR title, int width, int height)
 
 const XMINT2& Window::getMousePosition()
 {
+	static XMINT2 mousePosition;
+
+	POINT p;
+	BF(GetCursorPos(&p));
+	BF(ScreenToClient(handle, &p));
+
+	mousePosition.x = p.x;
+	mousePosition.y = p.y;
+
 	return mousePosition;
 }
 

@@ -30,7 +30,6 @@ public:
 	HWND getHandle();
 private:
 	XMINT2 minSize, minWndSize;
-	XMINT2 mousePosition;
 	bool keys[NUM_KEYCODES];
 	HWND handle;
 	SwapChain swapChain;
