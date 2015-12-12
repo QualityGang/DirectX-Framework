@@ -54,9 +54,7 @@ LRESULT Window::msgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-Window::Window(LPCSTR title, int width, int height) : 
-	title(title), 
-	size({width,height})
+Window::Window(LPCSTR title, int width, int height)
 {
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(nullptr);
 
@@ -80,25 +78,25 @@ Window::Window(LPCSTR title, int width, int height) :
 		initialized = true;
 	}
 
-	RECT wr = { 0, 0, size.x, size.y };
+	RECT wr = { 0, 0, width, height };
 
 	BF(AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE));
 
 	handle = CreateWindow("Window",
-						  title,
-						  WS_OVERLAPPEDWINDOW,
-						  CW_USEDEFAULT,
-						  CW_USEDEFAULT,
-						  wr.right - wr.left,
-						  wr.bottom - wr.top,
-						  nullptr,
-						  nullptr,
-						  hInstance,
-						  nullptr);
+		title,
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
+		wr.right - wr.left,
+		wr.bottom - wr.top,
+		nullptr,
+		nullptr,
+		hInstance,
+		nullptr);
 
 	BF(handle);
 
-	SetWindowLong(handle, GWL_USERDATA, (LONG)this);
+	SetWindowLong(handle, GWLP_USERDATA, (LONG)this);
 
 	ShowWindow(handle, SW_SHOW);
 
@@ -113,12 +111,12 @@ const XMINT2& Window::getMousePosition()
 
 void Window::setTitle(LPCSTR title)
 {
-	this->title = title;
+	BF(SetWindowText(handle, title));
 }
 
 void Window::setSize(int width, int height)
 {
-	size = { width, height };
+	BF(SetWindowPos(handle, HWND_TOP, 0, 0, width, height, SWP_NOMOVE));
 }
 
 void Window::setMinSize(int width, int height)
@@ -128,17 +126,36 @@ void Window::setMinSize(int width, int height)
 
 void Window::setResizable(bool resizable)
 {
-	this->resizable = resizable;
+	LONG l;
+
+	if (resizable)
+		l = GetWindowLong(handle, GWL_STYLE) ^ WS_THICKFRAME;
+	else
+		l = GetWindowLong(handle, GWL_STYLE) | WS_THICKFRAME;
+
+	SetWindowLong(handle, GWL_STYLE,l);
 }
 
 void Window::setMaximizable(bool maximizable)
 {
-	this->maximizable = maximizable;
+	LONG l;
+
+	if (maximizable)
+		l = GetWindowLong(handle, GWL_STYLE) ^ WS_MAXIMIZEBOX;
+	else
+		l = GetWindowLong(handle, GWL_STYLE) | WS_MAXIMIZEBOX;
+
+	SetWindowLong(handle, GWL_STYLE, l);
+}
+
+void Window::setPosition(XMINT2 position)
+{
+	BF(SetWindowPos(handle, HWND_TOP, position.x, position.y, 0, 0, SWP_NOSIZE));
 }
 
 Window* Window::getWindow(HWND hwnd)
 {
-	return (Window*)GetWindowLong(hwnd, GWL_USERDATA);
+	return (Window*)GetWindowLong(hwnd, GWLP_USERDATA);
 }
 
 std::string Window::getTitle()
@@ -154,9 +171,12 @@ std::string Window::getTitle()
 	return strTitle;
 }
 
-const XMINT2& Window::getSize()
+XMINT2 Window::getSize()
 {
-	return size;
+	RECT rect;
+	BF(!GetClientRect(handle, &rect));
+
+	return{ rect.right - rect.left, rect.bottom - rect.top };
 }
 
 const XMINT2& Window::getMinSize()
@@ -166,12 +186,11 @@ const XMINT2& Window::getMinSize()
 
 bool Window::isResizable()
 {
-	return resizable;
 }
 
 bool Window::isMaximizable()
 {
-	return maximizable;
+
 }
 
 HWND Window::getHandle()
