@@ -21,15 +21,15 @@ public:
 	void setPosition(XMINT2);
 	bool isKeyPressed(Key key);
 	static Window *getWindow(HWND hwnd);
-	std::string getTitle();
-	XMINT2 getSize();
+	const std::string& getTitle();
+	const XMINT2& getSize();
 	const XMINT2& getMinSize();
 	const XMINT2& getPosition();
 	bool isResizable();
 	bool isMaximizable();
 	HWND getHandle();
 private:
-	XMINT2 minSize;
+	XMINT2 minSize, minWndSize;
 	XMINT2 mousePosition;
 	bool keys[NUM_KEYCODES];
 	HWND handle;
