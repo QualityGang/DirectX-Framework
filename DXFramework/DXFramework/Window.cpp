@@ -96,7 +96,7 @@ Window::Window(LPCSTR title, int width, int height)
 
 	BF(handle);
 
-	SetWindowLong(handle, GWLP_USERDATA, (LONG)this);
+	SetWindowLongPtr(handle, GWLP_USERDATA, (LONG)this);
 
 	ShowWindow(handle, SW_SHOW);
 
@@ -164,7 +164,7 @@ void Window::setPosition(XMINT2 position)
 
 Window* Window::getWindow(HWND hwnd)
 {
-	return (Window*)GetWindowLong(hwnd, GWLP_USERDATA);
+	return (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 }
 
 const std::string& Window::getTitle()
