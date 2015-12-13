@@ -9,40 +9,42 @@ class Window
 {
 public:
 	Window(LPCSTR title, int width, int height);
-	//Window(HINSTANCE instance, LPCSTR title, const XMINT2 &size);
+	virtual ~Window();
 
 	void clear(float r, float g, float b, float a);
-	const XMINT2& getMousePosition();
+
 	void setTitle(LPCSTR title);
+	void setPosition(XMINT2);
 	void setSize(int width, int height);
 	void setMinSize(int width, int height);
 	void setResizable(bool resizable);
 	void setMaximizable(bool maximizable);
-	void setPosition(XMINT2);
-	bool isKeyPressed(Key key);
-	bool IsInWindow(int x, int y, bool inClientSpace);
-	inline static Window *getWindow(HWND hwnd);
+
 	const std::string& getTitle();
+	const XMINT2& getPosition();
+	const XMINT2& getMousePosition();
 	const XMINT2& getSize();
 	const XMINT2& getMinSize();
-	const XMINT2& getPosition();
+	HWND getHandle();
+
+	bool isKeyPressed(Key key);
 	bool isResizable();
 	bool isMaximizable();
-	HWND getHandle();
+	bool isInWindow(int x, int y, bool inClientSpace);
+
+	static Window *getWindow(HWND hwnd);
 private:
+	HWND handle;
 	XMINT2 minSize, minWndSize;
 	bool keys[NUM_KEYCODES];
-	HWND handle;
+
 	SwapChain swapChain;
 
 	static bool initialized;
 	static UINT windowCount;
 
-	static LRESULT CALLBACK msgProc(HWND hwnd,
-									UINT msg,
-									WPARAM wParam, LPARAM lParam);
+	void setKeyState(Key key, bool pressed);
+	void setMouseKeyState(RAWINPUT *ri, USHORT buttonFlagDown, USHORT buttonFlagUp, Key key);
 
-	void Window::SetKeyState(Key key, bool pressed);
-
-	void RawInputSetMouseKeyState(RAWINPUT* ri, USHORT buttonFlagDown, USHORT buttonFlagUp, Key key);
+	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

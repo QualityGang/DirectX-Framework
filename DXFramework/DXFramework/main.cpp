@@ -17,9 +17,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	while (msg.message != WM_QUIT)
 	{
-		if (GetMessage(&msg, window.getHandle(), 0, 0))
+		if (PeekMessage(&msg, window.getHandle(), 0, 0, PM_REMOVE))
 		{
 			DispatchMessage(&msg);
+		}
+		else
+		{
+			bool b = window.isKeyPressed(Key::A);
+			std::string s = std::to_string(b);
+			s += "\n";
+			OutputDebugString(s.c_str());
+
+			Sleep(100);
 		}
 	}
 
