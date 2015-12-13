@@ -144,7 +144,7 @@ namespace Keys
 		NumLock = 0x90, // The Num Lock key
 		Scroll = 0x91, // The Scroll Lock key
 		// 0x92 - 96 are OEM specific
-		// 0x97 - 9f are unassigned
+		// 0x97 - 9f are unassignedWM_KEYDOWN
 		LShiftKey = 0xa0, // The Left Shift key
 		RShiftKey = 0xa1, // The Right Shift key
 		LControlKey = 0xa2, // The Left Control key

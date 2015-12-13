@@ -20,7 +20,8 @@ public:
 	void setMaximizable(bool maximizable);
 	void setPosition(XMINT2);
 	bool isKeyPressed(Key key);
-	static Window *getWindow(HWND hwnd);
+	bool IsInWindow(int x, int y, bool inClientSpace);
+	inline static Window *getWindow(HWND hwnd);
 	const std::string& getTitle();
 	const XMINT2& getSize();
 	const XMINT2& getMinSize();
@@ -40,4 +41,8 @@ private:
 	static LRESULT CALLBACK msgProc(HWND hwnd,
 									UINT msg,
 									WPARAM wParam, LPARAM lParam);
+
+	void Window::SetKeyState(Key key, bool pressed);
+
+	void RawInputSetMouseKeyState(RAWINPUT* ri, USHORT buttonFlagDown, USHORT buttonFlagUp, Key key);
 };

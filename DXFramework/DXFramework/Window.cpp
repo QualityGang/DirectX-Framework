@@ -3,6 +3,10 @@
 
 #define IsMenuActiveByAlt(lParam) ((lParam >> 16) <= 0)
 
+#define RID_USAGE_MOUSE 2
+#define RID_USAGE_KEYBOARD 6
+
+
 bool Window::initialized = false;
 UINT Window::windowCount = 0;
 
@@ -13,10 +17,59 @@ LRESULT Window::msgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_CREATE:
-		break;
+	{
+		const int size = 2;
+
+		RAWINPUTDEVICE rid[size];
+
+		rid[0].usUsagePage = 1;
+		rid[0].usUsage = RID_USAGE_MOUSE;
+		rid[0].dwFlags = 0;
+		rid[0].hwndTarget = hwnd;
+
+		rid[1].usUsagePage = 1;
+		rid[1].usUsage = RID_USAGE_KEYBOARD;
+		rid[1].dwFlags = 0;
+		rid[1].hwndTarget = hwnd;
+
+		BF(RegisterRawInputDevices(rid, size, sizeof(RAWINPUTDEVICE)));
+	} break;
 
 	case WM_INPUT:
-		break;
+	{
+		UINT dwSize;
+
+		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, nullptr, &dwSize, sizeof(RAWINPUTHEADER));
+
+		BYTE *buffer = new BYTE[dwSize];
+
+		if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, (LPVOID)buffer, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
+		{
+			delete buffer;
+			throw std::exception("return size does not macth");
+		}
+
+
+		RAWINPUT *raw = (RAWINPUT*)buffer;
+
+		if (raw->header.dwType == RIM_TYPEMOUSE)
+		{
+			window->RawInputSetMouseKeyState(raw, RI_MOUSE_LEFT_BUTTON_DOWN, RI_MOUSE_LEFT_BUTTON_UP, Key::LButton);
+			window->RawInputSetMouseKeyState(raw, RI_MOUSE_RIGHT_BUTTON_DOWN, RI_MOUSE_RIGHT_BUTTON_UP, Key::RButton);
+			window->RawInputSetMouseKeyState(raw, RI_MOUSE_MIDDLE_BUTTON_DOWN, RI_MOUSE_MIDDLE_BUTTON_UP, Key::MButton);
+			window->RawInputSetMouseKeyState(raw, RI_MOUSE_BUTTON_4_DOWN, RI_MOUSE_BUTTON_4_UP, Key::XButton1);
+			window->RawInputSetMouseKeyState(raw, RI_MOUSE_BUTTON_5_DOWN, RI_MOUSE_BUTTON_5_UP, Key::XButton2);
+		}
+
+		else if (raw->header.dwType == RIM_TYPEKEYBOARD)
+		{
+			USHORT keyCode = raw->data.keyboard.VKey;
+			bool pressed = !(raw->data.keyboard.Flags & RI_KEY_BREAK);
+			window->SetKeyState((Key)keyCode, pressed);
+		}
+
+		delete buffer;
+	} break;
 
 	case WM_GETMINMAXINFO:
 	{
@@ -28,7 +81,9 @@ LRESULT Window::msgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		LPMINMAXINFO mmi = (LPMINMAXINFO)lParam;
 		mmi->ptMinTrackSize.x = window->minWndSize.x;
 		mmi->ptMinTrackSize.y = window->minWndSize.y;
-	} break;
+	} 
+	
+	break;
 
 	case WM_SIZE:
 		break;
@@ -83,16 +138,16 @@ Window::Window(LPCSTR title, int width, int height)
 	BF(AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE));
 
 	handle = CreateWindow("Window",
-						  title,
-						  WS_OVERLAPPEDWINDOW,
-						  CW_USEDEFAULT,
-						  CW_USEDEFAULT,
-						  wr.right - wr.left,
-						  wr.bottom - wr.top,
-						  nullptr,
-						  nullptr,
-						  hInstance,
-						  nullptr);
+		title,
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
+		wr.right - wr.left,
+		wr.bottom - wr.top,
+		nullptr,
+		nullptr,
+		hInstance,
+		nullptr);
 
 	BF(handle);
 
@@ -103,6 +158,10 @@ Window::Window(LPCSTR title, int width, int height)
 	windowCount++;
 }
 
+void Window::clear(float r, float g, float b, float a)
+{
+
+}
 
 const XMINT2& Window::getMousePosition()
 {
@@ -171,6 +230,34 @@ void Window::setPosition(XMINT2 position)
 	BF(SetWindowPos(handle, nullptr, position.x, position.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER));
 }
 
+bool Window::isKeyPressed(Key key)
+{
+	return keys[key];
+}
+
+bool Window::IsInWindow(int x, int y, bool inClientSpace)
+{
+	RECT rect;
+
+	if (inClientSpace)
+	{
+		if (!GetClientRect(handle, &rect))
+		{
+			throw std::exception();
+		}
+	}
+	else
+	{
+		if (!GetWindowRect(handle, &rect))
+		{
+			throw std::exception();
+		}
+	}
+
+	POINT cursorPos = { x, y };
+	return PtInRect(&rect, cursorPos) > 0;
+}
+
 Window* Window::getWindow(HWND hwnd)
 {
 	return (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
@@ -237,5 +324,24 @@ bool Window::isMaximizable()
 HWND Window::getHandle()
 {
 	return handle;
+}
+
+void Window::SetKeyState(Key key, bool pressed)
+{
+	keys[key] = pressed;
+}
+
+void Window::RawInputSetMouseKeyState(RAWINPUT* ri, USHORT buttonFlagDown, USHORT buttonFlagUp, Key key)
+{
+	POINT p = { getMousePosition().x, getMousePosition().y };
+
+	if (IsInWindow(p.x, p.y, true) && ri->data.mouse.usButtonFlags & buttonFlagDown)
+	{
+		SetKeyState(key, true);
+	}
+	else if (ri->data.mouse.usButtonFlags & buttonFlagUp)
+	{
+		SetKeyState(key, false);
+	}
 }
 
