@@ -225,7 +225,7 @@ void Window::setKeyState(Key key, bool pressed)
 
 void Window::setMouseKeyState(RAWINPUT* ri, USHORT buttonFlagDown, USHORT buttonFlagUp, Key key)
 {
-	POINT p = { getMousePosition().x, getMousePosition().y };
+	XMINT2 p = getMousePosition();
 
 	if (isInWindow(p.x, p.y, true) && (ri->data.mouse.usButtonFlags & buttonFlagDown))
 		setKeyState(key, true);
@@ -312,7 +312,7 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			if (--windowCount == 0)
 			{
-				PostQuitMessage(0);
+				PostQuitMessage(EXIT_SUCCESS);
 			}
 
 			break;
