@@ -5,6 +5,8 @@
 ComPtr<ID3D11Device> Pipeline::Device;
 ComPtr<ID3D11DeviceContext> Pipeline::DeviceContext;
 
+Pipeline::Initializer Pipeline::___initializer;
+
 
 void Pipeline::bindRenderTargetView(const RenderTargetView &renderTargetView, const DepthStencilView &depthStencilView)
 {

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Window.h"
+#include "Pipeline.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -14,6 +15,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	OutputDebugString(str.c_str());
 
 	MSG msg = { 0 };
+	Pipeline::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	while (msg.message != WM_QUIT)
 	{
