@@ -196,7 +196,6 @@ bool Window::isInWindow(int x, int y, bool inClientSpace)
 	else
 		BF(GetWindowRect(handle, &rect));
 
-
 	POINT cursorPos = { x, y };
 	return PtInRect(&rect, cursorPos) > 0;
 }
