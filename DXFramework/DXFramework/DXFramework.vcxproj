@@ -41,6 +41,7 @@
     </ClInclude>
     <ClInclude Include="Keys.h" />
     <ClInclude Include="NonCopyable.h" />
+    <ClInclude Include="Pipeline.h" />
     <ClInclude Include="PixelShader.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ExcludedFromBuild>
@@ -100,6 +101,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Pipeline.cpp" />
     <ClCompile Include="PixelShader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ExcludedFromBuild>

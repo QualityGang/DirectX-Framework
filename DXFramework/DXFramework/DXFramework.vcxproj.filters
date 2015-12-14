@@ -74,6 +74,9 @@
     <ClInclude Include="Keys.h">
       <Filter>D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="Pipeline.h">
+      <Filter>D3D11\Pipeline</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -124,6 +127,9 @@
       <Filter>D3D11\Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="VertexShader.cpp">
+      <Filter>D3D11\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Pipeline.cpp">
       <Filter>D3D11\Pipeline</Filter>
     </ClCompile>
   </ItemGroup>
