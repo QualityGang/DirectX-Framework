@@ -93,13 +93,14 @@ void Pipeline::getDefaultDxgiDevice(IDXGIDevice **dxgiDevice)
 	BF(Device.Get()->QueryInterface(__uuidof(IDXGIDevice), (void**)dxgiDevice));
 }
 
-void Pipeline::getDefaultDxgiAdapter(IDXGIAdapter **dxgiAdapter)
+void Pipeline::getDefaultDxgiAdapter(IDXGIAdapter **dxgiAdapter, IDXGIDevice *dxgiDevice)
 {
-
+	BF(dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)dxgiAdapter));
 }
 
-void Pipeline::getDefaultDxgiFactory(IDXGIFactory **dxgiFactory)
+void Pipeline::getDefaultDxgiFactory(IDXGIFactory **dxgiFactory, IDXGIAdapter *dxgiAdapter)
 {
+	BF(dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)dxgiFactory));
 }
 
 Pipeline::Initializer::Initializer()
@@ -112,6 +113,6 @@ Pipeline::Initializer::Initializer()
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	HR(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-						 createDeviceFlags, &featureLevel, 1, D3D11_SDK_VERSION,
-						 Device.GetAddressOf(), nullptr, DeviceContext.GetAddressOf()));
+		createDeviceFlags, &featureLevel, 1, D3D11_SDK_VERSION,
+		Device.GetAddressOf(), nullptr, DeviceContext.GetAddressOf()));
 }
