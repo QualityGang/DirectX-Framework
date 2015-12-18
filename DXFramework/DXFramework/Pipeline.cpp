@@ -93,12 +93,12 @@ void Pipeline::getDefaultDxgiDevice(IDXGIDevice **dxgiDevice)
 	BF(Device.Get()->QueryInterface(__uuidof(IDXGIDevice), (void**)dxgiDevice));
 }
 
-void Pipeline::getDefaultDxgiAdapter(IDXGIAdapter **dxgiAdapter, IDXGIDevice *dxgiDevice)
+void Pipeline::getDefaultDxgiAdapter(IDXGIDevice *dxgiDevice, IDXGIAdapter **dxgiAdapter)
 {
 	BF(dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)dxgiAdapter));
 }
 
-void Pipeline::getDefaultDxgiFactory(IDXGIFactory **dxgiFactory, IDXGIAdapter *dxgiAdapter)
+void Pipeline::getDefaultDxgiFactory(IDXGIAdapter *dxgiAdapter, IDXGIFactory **dxgiFactory)
 {
 	BF(dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)dxgiFactory));
 }

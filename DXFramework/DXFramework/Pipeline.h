@@ -35,8 +35,8 @@ public:
 	static void drawIndexed(UINT indexCount, UINT startIndexLocation, UINT baseVertexLocation);
 
 	static void getDefaultDxgiDevice(IDXGIDevice **dxgiDevice);
-	static void getDefaultDxgiAdapter(IDXGIAdapter **dxgiAdapter, IDXGIDevice *dxgiDevice);
-	static void getDefaultDxgiFactory(IDXGIFactory **dxgiFactory, IDXGIAdapter *dxgiAdapter);
+	static void getDefaultDxgiAdapter(IDXGIDevice *dxgiDevice, IDXGIAdapter **dxgiAdapter);
+	static void getDefaultDxgiFactory(IDXGIAdapter *dxgiAdapter, IDXGIFactory **dxgiFactory);
 
 	static ComPtr<ID3D11Device> Device;
 	static ComPtr<ID3D11DeviceContext> DeviceContext;
