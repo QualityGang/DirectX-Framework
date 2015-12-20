@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "RasterizerState.h"
-
+#include "Pipeline.h"
 
 
 RasterizerState::RasterizerState()
@@ -13,7 +13,7 @@ RasterizerState::~RasterizerState()
 
 void RasterizerState::create()
 {
-	
+	BF(Pipeline::Device.Get()->CreateRasterizerState(&getDesc(), ptr.GetAddressOf()));
 }
 
 void RasterizerState::setFillMode(D3D11_FILL_MODE mode)

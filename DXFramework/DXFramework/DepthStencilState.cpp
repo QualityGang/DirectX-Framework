@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "DepthStencilState.h"
-
+#include "Pipeline.h"
 
 
 DepthStencilState::DepthStencilState()
@@ -13,7 +13,7 @@ DepthStencilState::~DepthStencilState()
 
 void DepthStencilState::create()
 {
-	
+	BF(Pipeline::Device.Get()->CreateDepthStencilState(&getDesc(), ptr.GetAddressOf()));
 }
 
 void DepthStencilState::setDepthEnable(BOOL enable)

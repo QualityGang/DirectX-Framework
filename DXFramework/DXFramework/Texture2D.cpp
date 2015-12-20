@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Texture2D.h"
-
+#include "Pipeline.h"
 
 
 Texture2D::Texture2D()
@@ -13,7 +13,7 @@ Texture2D::~Texture2D()
 
 void Texture2D::create()
 {
-
+	BF(Pipeline::Device.Get()->CreateTexture2D(&getDesc(), nullptr, ptr.GetAddressOf()));
 }
 
 void Texture2D::setArraySize(UINT size)

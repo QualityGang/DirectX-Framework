@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Buffer.h"
+#include "Pipeline.h"
 
 
 
@@ -13,7 +14,7 @@ Buffer::~Buffer()
 
 void Buffer::create()
 {
-	
+	Pipeline::Device.Get()->CreateBuffer(&desc, &resData, ptr.GetAddressOf());
 }
 
 void Buffer::setByteWidth(UINT width)

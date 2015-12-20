@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SamplerState.h"
-
+#include "Pipeline.h"
 
 
 SamplerState::SamplerState()
@@ -13,7 +13,7 @@ SamplerState::~SamplerState()
 
 void SamplerState::create()
 {
-	
+	BF(Pipeline::Device.Get()->CreateSamplerState(&getDesc(), ptr.GetAddressOf()));
 }
 
 void SamplerState::setFilter(D3D11_FILTER filter)

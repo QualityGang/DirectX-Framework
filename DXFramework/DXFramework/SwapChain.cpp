@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SwapChain.h"
-
+#include "Pipeline.h"
 
 
 SwapChain::SwapChain()
@@ -13,7 +13,16 @@ SwapChain::~SwapChain()
 
 void SwapChain::create()
 {
-	
+	ComPtr<IDXGIDevice> dxgiDevice= nullptr;
+	Pipeline::getDefaultDxgiDevice(dxgiDevice.GetAddressOf());
+
+	ComPtr<IDXGIAdapter> dxgiAdapter = nullptr;
+	Pipeline::getDefaultDxgiAdapter(dxgiDevice.Get(),dxgiAdapter.GetAddressOf());
+
+	ComPtr<IDXGIFactory> dxgiFactory = nullptr;
+	Pipeline::getDefaultDxgiFactory(dxgiAdapter.Get(), dxgiFactory.GetAddressOf());
+
+	BF(dxgiFactory->CreateSwapChain(Pipeline::Device.Get(), &desc, ptr.GetAddressOf()));
 }
 
 void SwapChain::setBufferCount(UINT count)

@@ -5,11 +5,11 @@
 Sprite::Sprite(const Texture2D& texture) :
 	m_Texture(texture),
 	m_Position(0, 0),
-	m_Size(1, 1),
-	m_Color(0, 0, 0, 0),
+	m_Size(static_cast<float>(texture.getDesc().Width), static_cast<float>(texture.getDesc().Height)),
+	m_Color(1.0f, 1.0f, 1.0f, 1.0f),
 	m_Rotation(0),
 	m_PositionAnchor(0, 0),
-	m_RotationAnchor(0, 0),
+	m_RotationAnchor(0.5f, 0.5f),
 	m_SourceRect(0, 0, 1, 1)
 {
 }

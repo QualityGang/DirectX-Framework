@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "InputLayout.h"
-
+#include "Pipeline.h"
 
 
 InputLayout::InputLayout()
@@ -13,7 +13,11 @@ InputLayout::~InputLayout()
 
 void InputLayout::create(const Shader &shader, Element *elements, UINT count)
 {
-	
+	BF(Pipeline::Device.Get()->CreateInputLayout(&elements->getDesc(),
+		count,
+		shader.getBytecode(),
+		shader.getBytecodeSize(),
+		ptr.GetAddressOf()));
 }
 
 void InputLayout::Element::setSemanticName(LPCSTR name)
