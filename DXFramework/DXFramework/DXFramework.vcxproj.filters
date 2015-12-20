@@ -77,6 +77,7 @@
     <ClInclude Include="Pipeline.h">
       <Filter>D3D11\Pipeline</Filter>
     </ClInclude>
+    <ClInclude Include="Sprite.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -132,6 +133,7 @@
     <ClCompile Include="Pipeline.cpp">
       <Filter>D3D11\Pipeline</Filter>
     </ClCompile>
+    <ClCompile Include="Sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="D3D11Desc.inl">
