@@ -13,7 +13,7 @@ SamplerState::~SamplerState()
 
 void SamplerState::create()
 {
-	BF(Pipeline::Device.Get()->CreateSamplerState(&getDesc(), ptr.GetAddressOf()));
+	HR(Pipeline::Device->CreateSamplerState(&desc, ptr.GetAddressOf()));
 }
 
 void SamplerState::setFilter(D3D11_FILTER filter)

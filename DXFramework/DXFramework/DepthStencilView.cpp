@@ -13,10 +13,10 @@ DepthStencilView::~DepthStencilView()
 
 void DepthStencilView::create(ID3D11Resource *resource)
 {
-	BF(Pipeline::Device.Get()->CreateDepthStencilView(resource, nullptr, ptr.GetAddressOf()));
+	HR(Pipeline::Device->CreateDepthStencilView(resource, nullptr, ptr.GetAddressOf()));
 }
 
 void DepthStencilView::clear(FLOAT depth, UINT8 stencil)
 {
-	
+	Pipeline::DeviceContext->ClearDepthStencilView(ptr.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
 }

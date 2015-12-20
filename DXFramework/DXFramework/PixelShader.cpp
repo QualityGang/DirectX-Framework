@@ -13,5 +13,5 @@ PixelShader::~PixelShader()
 
 void PixelShader::create()
 {
-	BF(Pipeline::Device.Get()->CreatePixelShader(getBytecode(), getBytecodeSize(), nullptr, ptr.GetAddressOf()));
+	HR(Pipeline::Device->CreatePixelShader(bytecode, bytecodeSize, nullptr, ptr.GetAddressOf()));
 }

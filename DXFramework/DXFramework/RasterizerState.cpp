@@ -13,7 +13,7 @@ RasterizerState::~RasterizerState()
 
 void RasterizerState::create()
 {
-	BF(Pipeline::Device.Get()->CreateRasterizerState(&getDesc(), ptr.GetAddressOf()));
+	HR(Pipeline::Device->CreateRasterizerState(&desc, ptr.GetAddressOf()));
 }
 
 void RasterizerState::setFillMode(D3D11_FILL_MODE mode)

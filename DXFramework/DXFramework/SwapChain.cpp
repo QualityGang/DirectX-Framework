@@ -13,16 +13,16 @@ SwapChain::~SwapChain()
 
 void SwapChain::create()
 {
-	ComPtr<IDXGIDevice> dxgiDevice= nullptr;
+	ComPtr<IDXGIDevice> dxgiDevice;
 	Pipeline::getDefaultDxgiDevice(dxgiDevice.GetAddressOf());
 
-	ComPtr<IDXGIAdapter> dxgiAdapter = nullptr;
-	Pipeline::getDefaultDxgiAdapter(dxgiDevice.Get(),dxgiAdapter.GetAddressOf());
+	ComPtr<IDXGIAdapter> dxgiAdapter;
+	Pipeline::getDefaultDxgiAdapter(dxgiDevice.Get(), dxgiAdapter.GetAddressOf());
 
-	ComPtr<IDXGIFactory> dxgiFactory = nullptr;
+	ComPtr<IDXGIFactory> dxgiFactory;
 	Pipeline::getDefaultDxgiFactory(dxgiAdapter.Get(), dxgiFactory.GetAddressOf());
 
-	BF(dxgiFactory->CreateSwapChain(Pipeline::Device.Get(), &desc, ptr.GetAddressOf()));
+	HR(dxgiFactory->CreateSwapChain(Pipeline::Device.Get(), &desc, ptr.GetAddressOf()));
 }
 
 void SwapChain::setBufferCount(UINT count)

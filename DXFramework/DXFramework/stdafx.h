@@ -33,3 +33,4 @@ using namespace Microsoft::WRL;
 
 #define BF(b) if (!b) throw std::exception()
 #define HR(hr) if (FAILED(hr)) throw std::exception()
+#define FT(fte) if (fte) throw std::exception()

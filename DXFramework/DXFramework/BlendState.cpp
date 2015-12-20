@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "BlendState.h"
+
 #include "Pipeline.h"
 
 
@@ -13,7 +14,7 @@ BlendState::~BlendState()
 
 void BlendState::create()
 {
-	Pipeline::Device.Get()->CreateBlendState(&desc, ptr.GetAddressOf());
+	HR(Pipeline::Device->CreateBlendState(&desc, ptr.GetAddressOf()));
 }
 
 void BlendState::setAlphaToCoverageEnable(BOOL enable)

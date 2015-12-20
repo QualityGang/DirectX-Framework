@@ -13,7 +13,7 @@ public:
 	const BYTE *getBytecode() const;
 	size_t getBytecodeSize() const;
 protected:
-	const BYTE *m_Bytecode;
-	size_t m_BytecodeSize;
+	const BYTE *bytecode;
+	size_t bytecodeSize;
 };
 

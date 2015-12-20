@@ -11,6 +11,9 @@
     <Filter Include="D3D11\Pipeline">
       <UniqueIdentifier>{52d64671-59af-4dba-9197-09f06cab247a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FI">
+      <UniqueIdentifier>{c847434e-ff5f-460f-abe6-f54fde1908e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -78,7 +81,13 @@
       <Filter>D3D11\Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
-      <Filter>D3D11\Pipeline</Filter>
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="FIHelper.h">
+      <Filter>FI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -136,7 +145,13 @@
       <Filter>D3D11\Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="FIHelper.cpp">
+      <Filter>FI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

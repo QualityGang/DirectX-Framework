@@ -7,7 +7,7 @@ public:
 	typedef ComPtr<T> Ptr;
 	typedef T* RawPtr;
 
-	bool isValid() const;
+	//bool isValid() const;
 
 	RawPtr getPtr() const;
 protected:

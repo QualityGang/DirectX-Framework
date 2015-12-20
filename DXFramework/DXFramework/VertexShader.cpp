@@ -13,5 +13,5 @@ VertexShader::~VertexShader()
 
 void VertexShader::create()
 {
-	BF(Pipeline::Device.Get()->CreateVertexShader(getBytecode(), getBytecodeSize(), nullptr, ptr.GetAddressOf()));
+	HR(Pipeline::Device.Get()->CreateVertexShader(bytecode, bytecodeSize, nullptr, ptr.GetAddressOf()));
 }

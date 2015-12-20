@@ -13,7 +13,7 @@ DepthStencilState::~DepthStencilState()
 
 void DepthStencilState::create()
 {
-	BF(Pipeline::Device.Get()->CreateDepthStencilState(&getDesc(), ptr.GetAddressOf()));
+	HR(Pipeline::Device->CreateDepthStencilState(&getDesc(), ptr.GetAddressOf()));
 }
 
 void DepthStencilState::setDepthEnable(BOOL enable)

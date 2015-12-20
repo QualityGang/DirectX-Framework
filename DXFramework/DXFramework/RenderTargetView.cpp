@@ -13,11 +13,11 @@ RenderTargetView::~RenderTargetView()
 
 void RenderTargetView::create(ID3D11Resource *resource)
 {
-	BF(Pipeline::Device.Get()->CreateRenderTargetView(resource, &getDesc(), ptr.GetAddressOf()));
+	HR(Pipeline::Device->CreateRenderTargetView(resource, nullptr, ptr.GetAddressOf()));
 }
 
 void RenderTargetView::clear(float r, float g, float b, float a)
 {
-	float color[] = { r, g, b, a };
-
+	FLOAT color[4] = { r, g, b, a };
+	Pipeline::DeviceContext->ClearRenderTargetView(ptr.Get(), color);
 }

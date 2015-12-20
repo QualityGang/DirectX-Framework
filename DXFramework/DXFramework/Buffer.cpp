@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Buffer.h"
-#include "Pipeline.h"
 
+#include "Pipeline.h"
 
 
 Buffer::Buffer()
@@ -14,7 +14,10 @@ Buffer::~Buffer()
 
 void Buffer::create()
 {
-	Pipeline::Device.Get()->CreateBuffer(&desc, &resData, ptr.GetAddressOf());
+	if (resData.pSysMem)
+		HR(Pipeline::Device->CreateBuffer(&desc, nullptr, ptr.GetAddressOf()));
+	else
+		HR(Pipeline::Device->CreateBuffer(&desc, &resData, ptr.GetAddressOf()));
 }
 
 void Buffer::setByteWidth(UINT width)

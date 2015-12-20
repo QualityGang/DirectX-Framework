@@ -1,47 +1,53 @@
 #include "stdafx.h"
 #include "Sprite.h"
+
 #include <algorithm>
 
-Sprite::Sprite(const Texture2D& texture) :
-	m_Texture(texture),
-	m_Position(0, 0),
-	m_Size(static_cast<float>(texture.getDesc().Width), static_cast<float>(texture.getDesc().Height)),
-	m_Color(1.0f, 1.0f, 1.0f, 1.0f),
-	m_Rotation(0),
-	m_PositionAnchor(0, 0),
-	m_RotationAnchor(0.5f, 0.5f),
-	m_SourceRect(0, 0, 1, 1)
+
+Sprite::Sprite(const Texture &texture) :
+	texture(texture),
+	position(0, 0),
+	size(texture.getSize().x, texture.getSize().y),
+	color(1.0f, 1.0f, 1.0f, 1.0f),
+	rotation(0),
+	positionAnchor(0, 0),
+	rotationAnchor(0.5f, 0.5f),
+	sourceRect(0, 0, 1, 1)
 {
 }
 
-void Sprite::SetPosition(float x, float y)
+Sprite::~Sprite()
 {
-	m_Position = { x, y };
 }
 
-void Sprite::SetSize(float width, float height)
+void Sprite::setPosition(float x, float y)
 {
-	m_Size = { width, height };
+	position = { x, y };
 }
 
-void Sprite::SetRotation(float radians)
+void Sprite::setSize(float width, float height)
 {
-	m_Rotation = radians;
+	size = { width, height };
 }
 
-void Sprite::SetPositionAnchor(float x, float y)
+void Sprite::setRotation(float radians)
 {
-	m_PositionAnchor = { x, y };
+	rotation = radians;
 }
 
-void Sprite::SetRotationAnchor(float x, float y)
+void Sprite::setPositionAnchor(float x, float y)
 {
-	m_PositionAnchor = { x, y };
+	positionAnchor = { x, y };
 }
 
-void Sprite::SetColor(float r, float g, float b, float a)
+void Sprite::setRotationAnchor(float x, float y)
 {
-	m_Color =
+	positionAnchor = { x, y };
+}
+
+void Sprite::setColor(float r, float g, float b, float a)
+{
+	color =
 	{
 		std::max(std::min(r, 1.0f), 0.0f),
 		std::max(std::min(g, 1.0f), 0.0f),
@@ -50,57 +56,57 @@ void Sprite::SetColor(float r, float g, float b, float a)
 	};
 }
 
-void Sprite::SetTexture(const Texture2D& texture)
+void Sprite::setTexture(const Texture &texture)
 {
-	m_Texture = texture;
+	this->texture = texture;
 }
 
-void Sprite::SetSourceRect(float x, float y, float width, float height)
+void Sprite::setSourceRect(float x, float y, float width, float height)
 {
-	m_SourceRect = { x, y, width, height };
+	sourceRect = { x, y, width, height };
 }
 
-void Sprite::Move(float x, float y)
+void Sprite::move(float x, float y)
 {
-	m_Position = { m_Position.x + x, m_Position.y + y };
+	position = { position.x + x, position.y + y };
 }
 
-const XMFLOAT2& Sprite::GetPosition() const
+const XMFLOAT2& Sprite::getPosition() const
 {
-	return m_Position;
+	return position;
 }
 
-const XMFLOAT2& Sprite::GetSize() const
+const XMFLOAT2& Sprite::getSize() const
 {
-	return m_Size;
+	return size;
 }
 
-float Sprite::GetRotation() const
+float Sprite::getRotation() const
 {
-	return m_Rotation;
+	return rotation;
 }
 
-const XMFLOAT2& Sprite::GetPositionAnchor() const
+const XMFLOAT2& Sprite::getPositionAnchor() const
 {
-	return m_PositionAnchor;
+	return positionAnchor;
 }
 
-const XMFLOAT2& Sprite::GetRotationAnchor() const
+const XMFLOAT2& Sprite::getRotationAnchor() const
 {
-	return m_RotationAnchor;
+	return rotationAnchor;
 }
 
-const XMFLOAT4& Sprite::GetColor() const
+const XMFLOAT4& Sprite::getColor() const
 {
-	return m_Color;
+	return color;
 }
 
-const XMFLOAT4& Sprite::GetSourceRect() const
+const XMFLOAT4& Sprite::getSourceRect() const
 {
-	return m_SourceRect;
+	return sourceRect;
 }
 
-const Texture2D& Sprite::GetTexture() const
+const Texture& Sprite::getTexture() const
 {
-	return m_Texture;
+	return texture;
 }

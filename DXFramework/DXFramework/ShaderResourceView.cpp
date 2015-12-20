@@ -13,5 +13,5 @@ ShaderResourceView::~ShaderResourceView()
 
 void ShaderResourceView::create(ID3D11Resource *resource)
 {
-	BF(Pipeline::Device.Get()->CreateShaderResourceView(resource, nullptr, ptr.GetAddressOf()));
+	HR(Pipeline::Device->CreateShaderResourceView(resource, nullptr, ptr.GetAddressOf()));
 }

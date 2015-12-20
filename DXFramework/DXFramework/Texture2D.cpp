@@ -13,7 +13,7 @@ Texture2D::~Texture2D()
 
 void Texture2D::create()
 {
-	BF(Pipeline::Device.Get()->CreateTexture2D(&getDesc(), nullptr, ptr.GetAddressOf()));
+	HR(Pipeline::Device->CreateTexture2D(&desc, nullptr, ptr.GetAddressOf()));
 }
 
 void Texture2D::setArraySize(UINT size)

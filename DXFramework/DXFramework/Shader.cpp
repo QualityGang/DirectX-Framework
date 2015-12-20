@@ -12,16 +12,16 @@ Shader::~Shader()
 
 void Shader::setBytecode(const BYTE *bytecode, size_t size)
 {
-	m_Bytecode = bytecode;
-	m_BytecodeSize = size;
+	this->bytecode = bytecode;
+	this->bytecodeSize = size;
 }
 
 const BYTE* Shader::getBytecode() const
 {
-	return m_Bytecode;
+	return bytecode;
 }
 
 size_t Shader::getBytecodeSize() const
 {
-	return m_BytecodeSize;
+	return bytecodeSize;
 }
