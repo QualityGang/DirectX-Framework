@@ -17,9 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Window.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
     <ClInclude Include="BlendState.h">
       <Filter>D3D11\Pipeline</Filter>
     </ClInclude>
@@ -80,22 +77,25 @@
     <ClInclude Include="Pipeline.h">
       <Filter>D3D11\Pipeline</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
     <ClInclude Include="FIHelper.h">
       <Filter>FI</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>D3D11\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>D3D11\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>D3D11\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitmap.h">
+      <Filter>D3D11\Pipeline</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Window.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
     <ClCompile Include="BlendState.cpp">
       <Filter>D3D11\Pipeline</Filter>
     </ClCompile>
@@ -144,14 +144,20 @@
     <ClCompile Include="Pipeline.cpp">
       <Filter>D3D11\Pipeline</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
     <ClCompile Include="FIHelper.cpp">
       <Filter>FI</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>D3D11\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>D3D11\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>D3D11\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Bitmap.cpp">
+      <Filter>D3D11\Pipeline</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
