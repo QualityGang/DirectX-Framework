@@ -13,7 +13,10 @@ Texture2D::~Texture2D()
 
 void Texture2D::create()
 {
-	(Pipeline::Device->CreateTexture2D(&desc, nullptr, ptr.GetAddressOf()));
+	if (resData.pSysMem)
+		HR(Pipeline::Device->CreateTexture2D(&desc, &resData, ptr.GetAddressOf()));
+	else
+		HR(Pipeline::Device->CreateTexture2D(&desc, nullptr, ptr.GetAddressOf()));
 }
 
 void Texture2D::setArraySize(UINT size)

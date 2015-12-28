@@ -15,17 +15,17 @@ public:
 	virtual ~Bitmap();
 
 
-	void SetPixel(UINT x, UINT y, BYTE r, BYTE g, BYTE b, BYTE a);
-	void SetPixel(UINT index, BYTE r, BYTE g, BYTE b, BYTE a);
-	void SetPixelRect(UINT x, UINT y, UINT width, UINT height, BYTE r, BYTE g, BYTE b, BYTE a);
+	void setPixel(UINT x, UINT y, BYTE r, BYTE g, BYTE b, BYTE a);
+	void setPixel(UINT index, BYTE r, BYTE g, BYTE b, BYTE a);
+	void setPixelRect(UINT x, UINT y, UINT width, UINT height, BYTE r, BYTE g, BYTE b, BYTE a);
 
-	void GetPixel(UINT x, UINT y, XMUINT4* color) const;
-	void GetPixel(UINT index, XMUINT4* color) const;
+	void getPixel(UINT x, UINT y, XMUINT4* color) const;
+	void getPixel(UINT index, XMUINT4* color) const;
 
-	UINT GetWidth() const;
-	UINT GetHeight() const;
+	UINT getWidth() const;
+	UINT getHeight() const;
 private:
-	void UpdateTexture() const;
+	void updateTexture() const;
 
 	XMUINT2 size;
 	BYTE* pixels;

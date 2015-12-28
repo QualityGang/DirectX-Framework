@@ -28,7 +28,7 @@ Bitmap::Bitmap(UINT width, UINT height, BYTE r, BYTE g, BYTE b, BYTE a) :
 	{
 		for (UINT x = 0; x < width; ++x)
 		{
-			SetPixel(x, y, r, g, b, a);
+			setPixel(x, y, r, g, b, a);
 		}
 	}
 }
@@ -56,19 +56,18 @@ Bitmap Bitmap::operator=(const Bitmap& other)
 
 Bitmap::~Bitmap()
 {
-	delete pixels;
-	pixels = nullptr;
+	delete[] pixels;
 }
 
-void Bitmap::SetPixel(UINT x, UINT y, BYTE r, BYTE g, BYTE b, BYTE a)
+void Bitmap::setPixel(UINT x, UINT y, BYTE r, BYTE g, BYTE b, BYTE a)
 {
 	BF(x >= 0 && y >= 0);
 	BF(x + 1 < size.x && y + 1 < size.y);
 
-	SetPixel(y * size.x + x, r, g, b, a);
+	setPixel(y * size.x + x, r, g, b, a);
 }
 
-void Bitmap::SetPixel(UINT index, BYTE r, BYTE g, BYTE b, BYTE a)
+void Bitmap::setPixel(UINT index, BYTE r, BYTE g, BYTE b, BYTE a)
 {
 	BF(index >= 0 && index < (size.x * size.y * 4));
 
@@ -78,26 +77,30 @@ void Bitmap::SetPixel(UINT index, BYTE r, BYTE g, BYTE b, BYTE a)
 	pixels[index * 4 + 3] = a;
 }
 
-void Bitmap::SetPixelRect(UINT x, UINT y, UINT width, UINT height, BYTE r, BYTE g, BYTE b, BYTE a)
+void Bitmap::setPixelRect(UINT x, UINT y, UINT width, UINT height, BYTE r, BYTE g, BYTE b, BYTE a)
 {
+	BF(x >= 0 && y >= 0);
+	BF(x < size.x && y < size.y);
+
 	for (UINT iy = y; y < height; ++y)
 	{
 		for (UINT ix = x; x < width; ++x)
 		{
-			SetPixel(ix, iy, r, g, b, a);
+			if (ix < size.x && iy < size.y)
+				setPixel(ix, iy, r, g, b, a);
 		}
 	}
 }
 
-void Bitmap::GetPixel(UINT x, UINT y, XMUINT4* color) const
+void Bitmap::getPixel(UINT x, UINT y, XMUINT4* color) const
 {
 	BF(x >= 0 && y >= 0);
-	BF(x + 1 < size.x && y + 1 < size.y);
+	BF(x < size.x && y < size.y);
 
-	GetPixel(y * size.x + x, color);
+	getPixel(y * size.x + x, color);
 }
 
-void Bitmap::GetPixel(UINT index, XMUINT4* color) const
+void Bitmap::getPixel(UINT index, XMUINT4* color) const
 {
 	BF(index >= 0 && index < (size.x * size.y * 4));
 
@@ -107,19 +110,19 @@ void Bitmap::GetPixel(UINT index, XMUINT4* color) const
 	color->w = pixels[index * 4 + 3];
 }
 
-UINT Bitmap::GetWidth() const
+UINT Bitmap::getWidth() const
 {
 	return size.x;
 }
 
-UINT Bitmap::GetHeight() const
+UINT Bitmap::getHeight() const
 {
 	return size.y;
 }
 
-void Bitmap::UpdateTexture() const
+void Bitmap::updateTexture() const
 {
-	if(texture.getPtr() != nullptr)
+	if (texture.getPtr() != nullptr)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedData;
 		HR(Pipeline::DeviceContext->Map(texture.getPtr(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData));
@@ -134,9 +137,25 @@ void Bitmap::UpdateTexture() const
 			buffer += size.x * 4;
 		}
 
-		Pipeline::DeviceContext->Unmap(texture.getPtr(),0);
+		Pipeline::DeviceContext->Unmap(texture.getPtr(), 0);
 	}
 	else
 	{
+		texture.setWidth(size.x);
+		texture.setHeight(size.y);
+		texture.setUsage(D3D11_USAGE_DYNAMIC);
+		texture.setArraySize(1);
+		texture.setFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
+		texture.setSampleQuality(0);
+		texture.setSampleCount(1);
+		texture.setMiscFlags(0);
+		texture.setMipLevels(1);
+		texture.setCPUAccessFlags(D3D11_CPU_ACCESS_WRITE);
+		texture.setBindFlags(D3D11_BIND_SHADER_RESOURCE);
+		texture.setMem(pixels);
+
+		texture.create();
+
+		srv.create(texture.getPtr());
 	}
 }

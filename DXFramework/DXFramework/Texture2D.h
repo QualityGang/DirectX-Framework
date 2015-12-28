@@ -4,7 +4,7 @@
 #include "D3D11Desc.h"
 #include "D3D11SubResData.h"
 
-class Texture2D : public D3D11Ptr<ID3D11Texture2D>, public D3D11Desc<D3D11_TEXTURE2D_DESC>
+class Texture2D : public D3D11Ptr<ID3D11Texture2D>, public D3D11Desc<D3D11_TEXTURE2D_DESC>, public D3D11SubResData
 {
 public:
 	Texture2D();
