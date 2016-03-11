@@ -1,17 +1,19 @@
 #pragma once
 
+#include <functional>
+#include <vector>
 #include <string>
 
+#include "D3D11Renderer.h"
+#include "RenderTarget.h"
+#include "NonCopyable.h"
 #include "Keys.h"
-#include "SwapChain.h"
 
-class Window
+class Window : public RenderTarget
 {
 public:
 	Window(LPCSTR title, int width, int height);
 	virtual ~Window();
-
-	void clear(float r, float g, float b, float a);
 
 	void setTitle(LPCSTR title);
 	void setPosition(XMINT2);
@@ -19,32 +21,52 @@ public:
 	void setMinSize(int width, int height);
 	void setResizable(bool resizable);
 	void setMaximizable(bool maximizable);
+	void setFullscreen(bool fullscreen);
 
-	const std::string& getTitle();
-	const XMINT2& getPosition();
-	const XMINT2& getMousePosition();
-	const XMINT2& getSize();
+	void getTitle(std::string *title);
+	void getPosition(XMINT2 *position);
+	void getMousePosition(XMINT2 *mousePosition);
+	void getSize(XMINT2 *size);
 	const XMINT2& getMinSize();
 	HWND getHandle();
 
 	bool isKeyPressed(Key key);
 	bool isResizable();
 	bool isMaximizable();
+	bool isMinimized();
+	bool isFullscreen();
 	bool isInWindow(int x, int y, bool inClientSpace);
 
-	static Window *getWindow(HWND hwnd);
+	typedef std::function<void(Window *window, int width, int height)> OnResizeListener;
+	void addOnResizeListener(OnResizeListener listener);
+
+	static Window* GetWindow(HWND hwnd);
 private:
 	HWND handle;
 	XMINT2 minSize, minWndSize;
 	bool keys[NUM_KEYCODES];
 
-	SwapChain swapChain;
+	std::vector<OnResizeListener> onResizeListeners;
 
-	static bool initialized;
+	IDXGISwapChain *swapChain;
+
 	static UINT windowCount;
+
+	void clientToScreen(int *width, int *height);
+	void clientToScreen(int *width, int *height, LONG style);
 
 	void setKeyState(Key key, bool pressed);
 	void setMouseKeyState(RAWINPUT *ri, USHORT buttonFlagDown, USHORT buttonFlagUp, Key key);
 
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+
+	class StaticInit
+	{
+	public:
+		StaticInit();
+		virtual ~StaticInit();
+	};
+
+	static StaticInit __static_init;
 };

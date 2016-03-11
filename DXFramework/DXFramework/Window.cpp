@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Window.h"
 
+#include "OutputEnum.h"
+
+
 #define IsMenuActiveByAlt(lParam) ((lParam >> 16) <= 0)
 
 #define WND_CLASSNAME "DXFrameworkClassName"
@@ -9,7 +12,8 @@
 #define RID_USAGE_KEYBOARD 6
 
 
-bool Window::initialized = false;
+Window::StaticInit Window::__static_init;
+
 UINT Window::windowCount = 0;
 
 
@@ -17,80 +21,71 @@ Window::Window(LPCSTR title, int width, int height)
 {
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(nullptr);
 
-	if (!initialized)
-	{
-		WNDCLASSEX wcex;
-		ZeroMemory(&wcex, sizeof(wcex));
-
-		wcex.cbSize = sizeof(wcex);
-		wcex.hInstance = hInstance;
-		wcex.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-		wcex.hIconSm = wcex.hIcon;
-		wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-		wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-		wcex.lpszClassName = WND_CLASSNAME;
-		wcex.style = CS_VREDRAW | CS_HREDRAW;
-		wcex.lpfnWndProc = WndProc;
-
-		BF(RegisterClassEx(&wcex));
-
-		initialized = true;
-	}
-
-	RECT wr = { 0, 0, width, height };
-
-	BF(AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE));
+	clientToScreen(&width, &height, WS_OVERLAPPEDWINDOW);
 
 	handle = CreateWindow(WND_CLASSNAME, title, WS_OVERLAPPEDWINDOW,
-						  CW_USEDEFAULT, CW_USEDEFAULT,
-						  wr.right - wr.left, wr.bottom - wr.top,
+						  CW_USEDEFAULT, CW_USEDEFAULT, width, height,
 						  nullptr, nullptr, hInstance, nullptr);
 
-	BF(handle);
-
-	SetWindowLongPtr(handle, GWLP_USERDATA, (LONG)this);
+	SetWindowLongPtr(handle, GWLP_USERDATA, (LONG_PTR)this);
 
 	ShowWindow(handle, SW_SHOW);
+	init(handle, (float)width, (float)height);
 
 	windowCount++;
 }
 
 Window::~Window()
 {
+	handle = nullptr;
 }
 
-void Window::clear(float r, float g, float b, float a)
+Window::StaticInit::StaticInit()
 {
+	WNDCLASSEX wcex;
+	ZeroMemory(&wcex, sizeof(wcex));
+	wcex.cbSize = sizeof(wcex);
+	wcex.hInstance = (HINSTANCE)GetModuleHandle(nullptr);
+	wcex.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+	wcex.hIconSm = wcex.hIcon;
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wcex.lpszClassName = WND_CLASSNAME;
+	//wcex.style = CS_VREDRAW | CS_HREDRAW;
+	wcex.lpfnWndProc = WndProc;
 
+	RegisterClassEx(&wcex);
+}
+
+Window::StaticInit::~StaticInit()
+{
 }
 
 void Window::setTitle(LPCSTR title)
 {
-	BF(SetWindowText(handle, title));
+	SetWindowText(handle, title);
 }
 
 void Window::setPosition(XMINT2 position)
 {
-	BF(SetWindowPos(handle, nullptr, position.x, position.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER));
+	SetWindowPos(handle, nullptr, position.x, position.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }
 
 void Window::setSize(int width, int height)
 {
-	BF(SetWindowPos(handle, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER));
+	clientToScreen(&width, &height);
+	SetWindowPos(handle, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER);
 }
 
 void Window::setMinSize(int width, int height)
 {
-	LONG style = GetWindowLong(handle, GWL_STYLE);
-
-	RECT wr = { 0, 0, width, height };
-	BF(AdjustWindowRect(&wr, style, FALSE));
-
-	minWndSize.x = wr.right - wr.left;
-	minWndSize.y = wr.bottom - wr.top;
-
 	minSize.x = width;
 	minSize.y = height;
+
+	clientToScreen(&width, &height);
+
+	minWndSize.x = width;
+	minWndSize.y = height;
 }
 
 void Window::setResizable(bool resizable)
@@ -102,7 +97,7 @@ void Window::setResizable(bool resizable)
 	else
 		style &= ~WS_THICKFRAME;
 
-	BF(SetWindowLong(handle, GWL_STYLE, style));
+	SetWindowLong(handle, GWL_STYLE, style);
 }
 
 void Window::setMaximizable(bool maximizable)
@@ -114,62 +109,90 @@ void Window::setMaximizable(bool maximizable)
 	else
 		style &= ~WS_MAXIMIZEBOX;
 
-	BF(SetWindowLong(handle, GWL_STYLE, style));
+	SetWindowLong(handle, GWL_STYLE, style);
 }
 
-const std::string& Window::getTitle()
+void Window::setFullscreen(bool fullscreen)
 {
-	static std::string strTitle;
+	debug_stream << "fullscreen not implemented" << std::endl;
+	return;
 
-	int titleLen = GetWindowTextLength(handle) + 1;
+	if (fullscreen == isFullscreen())
+		return;
 
-	char *title = new char[titleLen];
-	GetWindowText(handle, title, titleLen);
+	OutputEnum outputEnum;
+	const OutputEnum::Output &output = outputEnum.getOutput(handle);
 
-	strTitle = title;
-	delete title;
+	if (fullscreen)
+	{
+		DXGI_MODE_DESC modeDesc;
+		ZeroMemory(&modeDesc, sizeof(DXGI_MODE_DESC));
+		modeDesc.Width = output.desktopArea.right - output.desktopArea.left;
+		modeDesc.Height = output.desktopArea.bottom - output.desktopArea.top;
 
-	return strTitle;
+		HRESULT hr = swapChain->ResizeTarget(&modeDesc);
+
+		if (FAILED(hr))
+			PrintError(hr);
+
+		hr = swapChain->SetFullscreenState(true, output.dxgiOutput);
+
+		if (FAILED(hr))
+			PrintError(hr);
+	}
+	else
+	{
+		HRESULT hr = swapChain->SetFullscreenState(false, nullptr);
+
+		if (FAILED(hr))
+			PrintError(hr);
+
+		DXGI_MODE_DESC modeDesc;
+		ZeroMemory(&modeDesc, sizeof(DXGI_MODE_DESC));
+		modeDesc.Width = 800;
+		modeDesc.Height = 600;
+
+		hr = swapChain->ResizeTarget(&modeDesc);
+
+		if (FAILED(hr))
+			PrintError(hr);
+	}
 }
 
-const XMINT2& Window::getPosition()
+void Window::getTitle(std::string *title)
 {
-	static XMINT2 position;
+	int len = GetWindowTextLength(handle) + 1;
+	std::vector<char> buf(len);
+	GetWindowText(handle, &buf[0], len);
+	*title = &buf[0];
+}
 
+void Window::getPosition(XMINT2 *position)
+{
 	RECT wr;
-	BF(GetWindowRect(handle, &wr));
+	GetWindowRect(handle, &wr);
 
-	position.x = wr.left;
-	position.y = wr.top;
-
-	return position;
+	position->x = wr.left;
+	position->y = wr.top;
 }
 
-const XMINT2& Window::getMousePosition()
+void Window::getMousePosition(XMINT2 *mousePosition)
 {
-	static XMINT2 mousePosition;
-
 	POINT p;
-	BF(GetCursorPos(&p));
-	BF(ScreenToClient(handle, &p));
+	GetCursorPos(&p);
+	ScreenToClient(handle, &p);
 
-	mousePosition.x = p.x;
-	mousePosition.y = p.y;
-
-	return mousePosition;
+	mousePosition->x = p.x;
+	mousePosition->y = p.y;
 }
 
-const XMINT2& Window::getSize()
+void Window::getSize(XMINT2 *size)
 {
-	static XMINT2 size;
-
 	RECT cr;
-	BF(GetClientRect(handle, &cr));
+	GetClientRect(handle, &cr);
 
-	size.x = cr.right - cr.left;
-	size.y = cr.bottom - cr.top;
-
-	return size;
+	size->x = cr.right - cr.left;
+	size->y = cr.bottom - cr.top;
 }
 
 const XMINT2& Window::getMinSize()
@@ -192,12 +215,17 @@ bool Window::isInWindow(int x, int y, bool inClientSpace)
 	RECT rect;
 
 	if (inClientSpace)
-		BF(GetClientRect(handle, &rect));
+		GetClientRect(handle, &rect);
 	else
-		BF(GetWindowRect(handle, &rect));
+		GetWindowRect(handle, &rect);
 
 	POINT cursorPos = { x, y };
 	return PtInRect(&rect, cursorPos) > 0;
+}
+
+void Window::addOnResizeListener(OnResizeListener listener)
+{
+	onResizeListeners.push_back(listener);
 }
 
 bool Window::isResizable()
@@ -212,9 +240,40 @@ bool Window::isMaximizable()
 	return (style & WS_MAXIMIZEBOX) == WS_MAXIMIZEBOX;
 }
 
-Window* Window::getWindow(HWND hwnd)
+bool Window::isMinimized()
+{
+	return IsIconic(handle) > 0;
+}
+
+bool Window::isFullscreen()
+{
+	BOOL fullscreen = FALSE;
+	HRESULT hr = swapChain->GetFullscreenState(&fullscreen, nullptr);
+
+	if (FAILED(hr))
+		PrintError(hr);
+
+	return fullscreen > 0;
+}
+
+Window* Window::GetWindow(HWND hwnd)
 {
 	return (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+}
+
+void Window::clientToScreen(int *width, int *height)
+{
+	LONG style = GetWindowLong(handle, GWL_STYLE);
+	clientToScreen(width, height, style);
+}
+
+void Window::clientToScreen(int *width, int *height, LONG style)
+{
+	RECT wr = { 0, 0, *width, *height };
+	AdjustWindowRect(&wr, style, FALSE);
+
+	*width = wr.right - wr.left;
+	*height = wr.bottom - wr.top;
 }
 
 void Window::setKeyState(Key key, bool pressed)
@@ -224,7 +283,8 @@ void Window::setKeyState(Key key, bool pressed)
 
 void Window::setMouseKeyState(RAWINPUT* ri, USHORT buttonFlagDown, USHORT buttonFlagUp, Key key)
 {
-	XMINT2 p = getMousePosition();
+	XMINT2 p;
+	getMousePosition(&p);
 
 	if (isInWindow(p.x, p.y, true) && (ri->data.mouse.usButtonFlags & buttonFlagDown))
 		setKeyState(key, true);
@@ -234,7 +294,7 @@ void Window::setMouseKeyState(RAWINPUT* ri, USHORT buttonFlagDown, USHORT button
 
 LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	Window *window = getWindow(hwnd);
+	Window *window = GetWindow(hwnd);
 
 	switch (msg)
 	{
@@ -254,7 +314,7 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			rid[1].dwFlags = 0;
 			rid[1].hwndTarget = hwnd;
 
-			BF(RegisterRawInputDevices(rid, size, sizeof(RAWINPUTDEVICE)));
+			RegisterRawInputDevices(rid, size, sizeof(RAWINPUTDEVICE));
 		} break;
 
 		case WM_INPUT:
@@ -294,9 +354,7 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case WM_GETMINMAXINFO:
 		{
 			if (!window)
-			{
 				return DefWindowProc(hwnd, msg, wParam, lParam);
-			}
 
 			LPMINMAXINFO mmi = (LPMINMAXINFO)lParam;
 			mmi->ptMinTrackSize.x = window->minWndSize.x;
@@ -304,22 +362,33 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		} break;
 
 		case WM_SIZE:
-			break;
+		{
+			int width = (int)(short)LOWORD(lParam);
+			int height = (int)(short)HIWORD(lParam);
+
+			for (auto &listener : window->onResizeListeners)
+				listener(window, width, height);
+
+		} break;
 
 		case WM_DESTROY:
 			window->handle = nullptr;
 
 			if (--windowCount == 0)
-			{
 				PostQuitMessage(EXIT_SUCCESS);
-			}
 
 			break;
 
 		case WM_SYSCOMMAND:
-			if (wParam == SC_KEYMENU && IsMenuActiveByAlt(lParam)) return 0;
-			return DefWindowProc(hwnd, msg, wParam, lParam);
-
+			switch (wParam)
+			{
+				case SC_KEYMENU:
+					if (IsMenuActiveByAlt(lParam))
+						return 0;
+					break;
+				default:
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+			}
 		default:
 			return DefWindowProc(hwnd, msg, wParam, lParam);
 	}

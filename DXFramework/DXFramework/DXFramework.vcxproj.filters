@@ -1,171 +1,112 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="D3D11">
-      <UniqueIdentifier>{7f1e695a-8ec1-4647-9cbc-c8638f66399c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="D3D11\Pipeline">
-      <UniqueIdentifier>{52d64671-59af-4dba-9197-09f06cab247a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FI">
-      <UniqueIdentifier>{c847434e-ff5f-460f-abe6-f54fde1908e9}</UniqueIdentifier>
-    </Filter>
+    <FxCompile Include="SpriteVS.hlsl">
+      <Filter>D3D11\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SpritePS.hlsl">
+      <Filter>D3D11\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="BlendState.h">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClInclude Include="resource.h">
+      <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Buffer.h">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClInclude Include="AlignedNew.h">
+      <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11Desc.h">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClInclude Include="Bitmap.h">
+      <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11Ptr.h">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClInclude Include="D3D11Renderer.h">
+      <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11SubResData.h">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClInclude Include="FI.h">
+      <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="DepthStencilState.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthStencilView.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="InputLayout.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="PixelShader.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="RasterizerState.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderTargetView.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="SamplerState.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderResourceView.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="SwapChain.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture2D.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexShader.h">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="NonCopyable.h">
+    <ClInclude Include="IRenderer.h">
       <Filter>D3D11</Filter>
     </ClInclude>
     <ClInclude Include="Keys.h">
       <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="Pipeline.h">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClInclude Include="Logger.h">
+      <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="FIHelper.h">
-      <Filter>FI</Filter>
+    <ClInclude Include="NonCopyable.h">
+      <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClInclude Include="Output.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="OutputEnum.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteBatch.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteSortMode.h">
+      <Filter>D3D11</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
-      <Filter>D3D11\Pipeline</Filter>
+      <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClInclude Include="SpriteVS.h">
+      <Filter>D3D11\Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="Bitmap.h">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClInclude Include="SpritePS.h">
+      <Filter>D3D11\Shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="BlendState.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClCompile Include="Bitmap.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="Buffer.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClCompile Include="D3D11Renderer.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11SubResData.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClCompile Include="FI.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="DepthStencilState.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClCompile Include="IRenderer.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="DepthStencilView.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClCompile Include="Logger.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="InputLayout.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClCompile Include="OutputEnum.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="PixelShader.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="RasterizerState.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderTargetView.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="SamplerState.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderResourceView.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="SwapChain.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexShader.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="Pipeline.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="FIHelper.cpp">
-      <Filter>FI</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+    <ClCompile Include="SpriteBatch.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
-      <Filter>D3D11\Pipeline</Filter>
+      <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="Bitmap.cpp">
-      <Filter>D3D11\Pipeline</Filter>
-    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="D3D11Desc.inl">
-      <Filter>D3D11\Pipeline</Filter>
-    </None>
-    <None Include="D3D11Ptr.inl">
-      <Filter>D3D11\Pipeline</Filter>
-    </None>
+    <Filter Include="D3D11">
+      <UniqueIdentifier>{13a469bd-8757-4ec1-a83e-68dde6d092f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{a265c36d-bbb6-49b5-b82c-b6d0b5dcf4cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D11\Shaders">
+      <UniqueIdentifier>{569e21db-e653-46d3-b77d-fb8b028ec77f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="box.png">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>
