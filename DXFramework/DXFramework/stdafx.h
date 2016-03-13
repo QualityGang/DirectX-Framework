@@ -11,7 +11,7 @@
 #define SAMPLE_COUNT 4
 #define SAMPLE_QUALITY 0
 #define BATCH_SIZE 2048
-#define VLD_ENABLED 1
+#define VLD_ENABLED 0
 
 // Windows headers
 #include <Windows.h>

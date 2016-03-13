@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "FI.h"
 
-#include <vld.h>
 
 
 FI::StaticInit FI::__static_init;

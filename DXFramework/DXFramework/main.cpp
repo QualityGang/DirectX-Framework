@@ -44,7 +44,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	sprite.srv = srv;
 
 	SpriteBatch::Sprite sprite2;
-	sprite2.position.x = 300;
+	sprite2.position.x = 150;
 	sprite2.position.y = 400;
 	sprite2.size.x = 150;
 	sprite2.size.y = 150;
