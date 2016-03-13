@@ -51,7 +51,7 @@ void RenderTarget::resize(int width, int height)
 		return;
 
 	//D3D11Renderer::DeviceContext->ClearState();
-	D3D11Renderer::DeviceContext->OMGetRenderTargets(0, nullptr, nullptr);
+	D3D11Renderer::DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 
 	SafeRelease(renderTargetView);
 	SafeRelease(depthStencilView);
