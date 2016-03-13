@@ -37,7 +37,6 @@
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="D3D11Renderer.h" />
     <ClInclude Include="FI.h" />
-    <ClInclude Include="IRenderer.h" />
     <ClInclude Include="Keys.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="NonCopyable.h" />
@@ -56,7 +55,6 @@
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="D3D11Renderer.cpp" />
     <ClCompile Include="FI.cpp" />
-    <ClCompile Include="IRenderer.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OutputEnum.cpp" />

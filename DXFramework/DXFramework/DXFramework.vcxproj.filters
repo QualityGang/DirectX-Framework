@@ -25,9 +25,6 @@
     <ClInclude Include="FI.h">
       <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderer.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
     <ClInclude Include="Keys.h">
       <Filter>D3D11</Filter>
     </ClInclude>
@@ -71,9 +68,6 @@
       <Filter>D3D11</Filter>
     </ClCompile>
     <ClCompile Include="FI.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="IRenderer.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
