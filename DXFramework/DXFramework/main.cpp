@@ -15,6 +15,14 @@ constexpr long double operator"" _deg(long double deg)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int iCmdShow)
 {
 	Window window("Title", 800, 600);
+	window.addOnResizeListener(
+	[](Window *window, int width, int height) -> void
+	{
+		window->resize(width, height);
+	});
+	window.setFullscreen(true);
+	window.removeOnResizeListener(0);
+
 	SpriteBatch batch;
 
 	ID3D11BlendState *bs;
@@ -67,6 +75,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		while (window.getHandle())
 		{
 			using namespace std::literals;
+
+			if (window.isKeyPressed(Key::Escape))
+			{
+				window.close();
+				continue;
+			}
 
 			XMINT2 size;
 			window.getSize(&size);

@@ -4,15 +4,6 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 
-// Global settings
-#define SWAPCHAIN_FLAGS DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
-#define BUFFER_FORMAT DXGI_FORMAT_R8G8B8A8_UNORM
-#define BUFFER_COUNT 2
-#define SAMPLE_COUNT 4
-#define SAMPLE_QUALITY 0
-#define BATCH_SIZE 2048
-#define VLD_ENABLED 0
-
 // Windows headers
 #include <Windows.h>
 #include <comdef.h>

@@ -37,6 +37,9 @@ Window::Window(LPCSTR title, int width, int height)
 
 Window::~Window()
 {
+	if (isFullscreen())
+		setFullscreen(false);
+
 	handle = nullptr;
 }
 
@@ -114,9 +117,6 @@ void Window::setMaximizable(bool maximizable)
 
 void Window::setFullscreen(bool fullscreen)
 {
-	debug_stream << "fullscreen not implemented" << std::endl;
-	return;
-
 	if (fullscreen == isFullscreen())
 		return;
 
@@ -226,6 +226,16 @@ bool Window::isInWindow(int x, int y, bool inClientSpace)
 void Window::addOnResizeListener(OnResizeListener listener)
 {
 	onResizeListeners.push_back(listener);
+}
+
+void Window::removeOnResizeListener(int index)
+{
+	onResizeListeners.erase(onResizeListeners.begin() + index);
+}
+
+void Window::close()
+{
+	SendMessage(handle, WM_CLOSE, (WPARAM)0, (LPARAM)0);
 }
 
 bool Window::isResizable()

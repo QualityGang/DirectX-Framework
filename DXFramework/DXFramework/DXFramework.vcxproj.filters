@@ -34,9 +34,6 @@
     <ClInclude Include="NonCopyable.h">
       <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="Output.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
     <ClInclude Include="OutputEnum.h">
       <Filter>D3D11</Filter>
     </ClInclude>
@@ -44,9 +41,6 @@
       <Filter>D3D11</Filter>
     </ClInclude>
     <ClInclude Include="SpriteBatch.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteSortMode.h">
       <Filter>D3D11</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
@@ -58,6 +52,7 @@
     <ClInclude Include="SpritePS.h">
       <Filter>D3D11\Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="Settings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

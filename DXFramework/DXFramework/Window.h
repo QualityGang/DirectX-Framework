@@ -39,6 +39,9 @@ public:
 
 	typedef std::function<void(Window *window, int width, int height)> OnResizeListener;
 	void addOnResizeListener(OnResizeListener listener);
+	void removeOnResizeListener(int index);
+
+	void close();
 
 	static Window* GetWindow(HWND hwnd);
 private:
@@ -47,8 +50,6 @@ private:
 	bool keys[NUM_KEYCODES];
 
 	std::vector<OnResizeListener> onResizeListeners;
-
-	IDXGISwapChain *swapChain;
 
 	static UINT windowCount;
 

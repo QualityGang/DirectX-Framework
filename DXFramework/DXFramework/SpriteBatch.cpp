@@ -8,6 +8,7 @@
 #include "SpriteVS.h"
 #include "SpritePS.h"
 
+#include "Settings.h"
 
 #define NUM_VERTICES 4
 
@@ -188,6 +189,7 @@ void SpriteBatch::prepare()
 	if (constBuff)
 	{
 		*constBuff = renderTarget->getProjectionMatrix();
+		*constBuff = XMMatrixTranspose(*constBuff);
 		D3D11Renderer::Unmap(ConstantBuffer);
 	}
 
@@ -235,6 +237,7 @@ void SpriteBatch::drawBatch(UINT startIndex, UINT count)
 			
 			instBuff[i].worldMatrix = XMMatrixAffineTransformation2D(scaling, origin,
 														-sprite.degrees, translation);
+			instBuff[i].worldMatrix = XMMatrixTranspose(instBuff[i].worldMatrix);
 		}
 
 		D3D11Renderer::Unmap(InstanceBuffer);

@@ -6,7 +6,7 @@ struct VSInput
 	float2 Position : POSITION;
 	float2 TexCoord : TEXCOORD;
 
-	row_major float4x4 World : WORLD;
+	float4x4 World : WORLD;
 };
 
 struct VSOutput
@@ -24,8 +24,8 @@ VSOutput main(VSInput input)
 {
 	VSOutput output;
 	output.Position = float4(input.Position, 0.0f, 1.0f);
-	output.Position = mul(input.World, output.Position);
-	output.Position = mul(VP, output.Position);
+	output.Position = mul(output.Position, input.World);
+	output.Position = mul(output.Position, VP);
 	output.TexCoord = input.TexCoord;
 	
 	return output;

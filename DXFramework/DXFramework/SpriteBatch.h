@@ -3,10 +3,15 @@
 #include <functional>
 #include <vector>
 
-#include "SpriteSortMode.h"
-
 #include "RenderTarget.h"
 
+
+enum class SpriteSortMode
+{
+	Deferred,
+	Immediate,
+	Texture
+};
 
 class SpriteBatch : public NonCopyable
 {

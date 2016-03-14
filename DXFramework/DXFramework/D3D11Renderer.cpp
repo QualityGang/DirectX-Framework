@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "D3D11Renderer.h"
 
+#include "Settings.h"
+
+
 D3D11Renderer::StaticInit D3D11Renderer::__static_init;
 
 ID3D11Device* D3D11Renderer::Device;

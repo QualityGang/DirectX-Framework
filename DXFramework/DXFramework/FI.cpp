@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "FI.h"
 
+#include "Settings.h"
 
 
 FI::StaticInit FI::__static_init;
-
 
 FI::StaticInit::StaticInit()
 {
