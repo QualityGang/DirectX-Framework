@@ -1,161 +1,183 @@
 #include "stdafx.h"
 #include "Bitmap.h"
-#include "Pipeline.h"
 
-Bitmap::Bitmap(UINT width, UINT height, const BYTE* srcPixels) :
-	size({ width,height }),
-	pixels(new BYTE[width * height * 4])
+#include "D3D11Renderer.h"
+
+Bitmap::Bitmap() : width(0), height(0)
 {
-	UINT length = width * height * 4;
+}
 
-	BF(length > 0);
+Bitmap::Bitmap(UINT width, UINT height, const BYTE *pixels) : 
+	width(width), height(height)
+{
+	UINT size = width * height * 4;
+	buffer = new BYTE[size];
 
-	if (srcPixels)
-		memcpy(pixels, srcPixels, length);
+	if (pixels)
+		memcpy(buffer, pixels, size);
 	else
-		ZeroMemory(pixels, length);
+		ZeroMemory(buffer, size);
 }
 
-Bitmap::Bitmap(UINT width, UINT height, BYTE r, BYTE g, BYTE b, BYTE a) :
-	size({ width,height }),
-	pixels(new BYTE[width * height * 4])
+Bitmap::~Bitmap()
 {
-	UINT length = width * height * 4;
-
-	BF(length > 0);
-
-	for (UINT y = 0; y < height; ++y)
-	{
-		for (UINT x = 0; x < width; ++x)
-		{
-			setPixel(x, y, r, g, b, a);
-		}
-	}
+	delete[] buffer;
+	SafeRelease(texture2D);
+	SafeRelease(shaderResourceView);
 }
 
-Bitmap::Bitmap(const Bitmap& other)
+Bitmap::Bitmap(const Bitmap &other)
 {
-	*this = other;
+	width = other.width;
+	height = other.height;
+	texture2D = nullptr;
+	shaderResourceView = nullptr;
+
+	UINT size = width * height * 4;
+	buffer = new BYTE[size];
+	memcpy(buffer, other.buffer, size);
 }
 
-Bitmap Bitmap::operator=(const Bitmap& other)
+Bitmap::Bitmap(Bitmap &&other)
+{
+	buffer = other.buffer;
+	width = other.width;
+	height = other.height;
+	texture2D = other.texture2D;
+	shaderResourceView = other.shaderResourceView;
+	
+	other.buffer = nullptr;
+	other.width = 0;
+	other.height = 0;
+	other.texture2D = nullptr;
+	other.shaderResourceView = nullptr;
+}
+
+Bitmap& Bitmap::operator=(const Bitmap &other)
+{
+	if (this != &other)
+		*this = std::move(Bitmap(other));
+
+	return *this;
+}
+
+Bitmap& Bitmap::operator=(Bitmap &&other)
 {
 	if (this != &other)
 	{
-		size = other.size;
+		delete[] buffer;
+		SafeRelease(texture2D);
+		SafeRelease(shaderResourceView);
 
-		delete[] pixels;
+		buffer = other.buffer;
+		width = other.width;
+		height = other.height;
+		dirty = other.dirty;
+		texture2D = other.texture2D;
+		shaderResourceView = other.shaderResourceView;
 
-		UINT length = size.x * size.y * 4;
-		pixels = new BYTE[length];
-		memcpy(pixels, other.pixels, length);
+		other.buffer = nullptr;
+		other.width = 0;
+		other.height = 0;
+		other.texture2D = nullptr;
+		other.shaderResourceView = nullptr;
 	}
 
 	return *this;
 }
 
-Bitmap::~Bitmap()
+void Bitmap::setPixel(UINT index, BYTE r, BYTE g, BYTE b, BYTE a)
 {
-	delete[] pixels;
+	BYTE *pixel = &buffer[index * 4];
+	*pixel++ = r;
+	*pixel++ = g;
+	*pixel++ = b;
+	*pixel   = a;
+
+	dirty = true;
 }
 
 void Bitmap::setPixel(UINT x, UINT y, BYTE r, BYTE g, BYTE b, BYTE a)
 {
-	BF(x >= 0 && y >= 0);
-	BF(x + 1 < size.x && y + 1 < size.y);
-
-	setPixel(y * size.x + x, r, g, b, a);
+	setPixel(y * width + x, r, g, b, a);
 }
 
-void Bitmap::setPixel(UINT index, BYTE r, BYTE g, BYTE b, BYTE a)
+void Bitmap::getPixel(UINT index, XMUINT4 *color) const
 {
-	BF(index >= 0 && index < (size.x * size.y * 4));
-
-	pixels[index * 4] = r;
-	pixels[index * 4 + 1] = g;
-	pixels[index * 4 + 2] = b;
-	pixels[index * 4 + 3] = a;
+	BYTE *pixel = &buffer[index * 4];
+	color->x = *pixel++;
+	color->y = *pixel++;
+	color->z = *pixel++;
+	color->w = *pixel  ;
 }
 
-void Bitmap::setPixelRect(UINT x, UINT y, UINT width, UINT height, BYTE r, BYTE g, BYTE b, BYTE a)
+void Bitmap::getPixel(UINT x, UINT y, XMUINT4 *color) const
 {
-	BF(x >= 0 && y >= 0);
-	BF(x < size.x && y < size.y);
-
-	for (UINT iy = y; y < height; ++y)
-	{
-		for (UINT ix = x; x < width; ++x)
-		{
-			if (ix < size.x && iy < size.y)
-				setPixel(ix, iy, r, g, b, a);
-		}
-	}
-}
-
-void Bitmap::getPixel(UINT x, UINT y, XMUINT4* color) const
-{
-	BF(x >= 0 && y >= 0);
-	BF(x < size.x && y < size.y);
-
-	getPixel(y * size.x + x, color);
-}
-
-void Bitmap::getPixel(UINT index, XMUINT4* color) const
-{
-	BF(index >= 0 && index < (size.x * size.y * 4));
-
-	color->x = pixels[index * 4];
-	color->y = pixels[index * 4 + 1];
-	color->z = pixels[index * 4 + 2];
-	color->w = pixels[index * 4 + 3];
+	getPixel(y * width + x, color);
 }
 
 UINT Bitmap::getWidth() const
 {
-	return size.x;
+	return width;
 }
 
 UINT Bitmap::getHeight() const
 {
-	return size.y;
+	return height;
 }
 
-void Bitmap::updateTexture() const
+void Bitmap::getShaderResourceView(ID3D11ShaderResourceView **srv)
 {
-	if (texture.getPtr() != nullptr)
-	{
-		D3D11_MAPPED_SUBRESOURCE mappedData;
-		HR(Pipeline::DeviceContext->Map(texture.getPtr(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData));
-
-		BYTE* data = static_cast<BYTE*>(mappedData.pData);
-		BYTE* buffer = pixels;
-
-		for (UINT i = 0; i < size.y; ++i)
+	if (dirty)
+		if (updateTexture())
+			dirty = false;
+		else
 		{
-			memcpy(data, buffer, size.x * 4);
-			data += mappedData.RowPitch;
-			buffer += size.x * 4;
+			*srv = nullptr;
+			return;
 		}
 
-		Pipeline::DeviceContext->Unmap(texture.getPtr(), 0);
+	*srv = shaderResourceView;
+}
+
+bool Bitmap::updateTexture() const
+{
+	if (!buffer)
+		return false;
+
+	if (texture2D)
+	{
+		BYTE *texBuff;
+		UINT rowWidth;
+		D3D11Renderer::Map(texture2D, D3D11_MAP_WRITE_DISCARD, (void**)&texBuff, &rowWidth);
+
+		if (!texBuff)
+			return false;
+
+		BYTE *buffer = this->buffer;
+
+		for (UINT i = 0; i < height; i++)
+		{
+			memcpy(texBuff, buffer, width * 4);
+			texBuff += rowWidth;
+			buffer += width * 4;
+		}
+
+		D3D11Renderer::Unmap(texture2D);
+
+		return true;
 	}
 	else
 	{
-		texture.setWidth(size.x);
-		texture.setHeight(size.y);
-		texture.setUsage(D3D11_USAGE_DYNAMIC);
-		texture.setArraySize(1);
-		texture.setFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
-		texture.setSampleQuality(0);
-		texture.setSampleCount(1);
-		texture.setMiscFlags(0);
-		texture.setMipLevels(1);
-		texture.setCPUAccessFlags(D3D11_CPU_ACCESS_WRITE);
-		texture.setBindFlags(D3D11_BIND_SHADER_RESOURCE);
-		texture.setMem(pixels);
+		D3D11Renderer::CreateTexture2D(width, height,
+			DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_SHADER_RESOURCE,
+			D3D11_USAGE_DYNAMIC, buffer, width * 4, &texture2D);
 
-		texture.create();
-
-		srv.create(texture.getPtr());
+		if (!texture2D)
+			return false;
+		
+		D3D11Renderer::CreateShaderResourceView(texture2D, &shaderResourceView);
+		
+		return shaderResourceView != nullptr;
 	}
 }
