@@ -59,6 +59,10 @@ public:
 
 	static void Map(ID3D11Resource *res, D3D11_MAP mapType, void **ptr, UINT *rowWidth = nullptr);
 	static void Unmap(ID3D11Resource *res);
+
+	static void GetTexture2D(ID3D11ShaderResourceView *srv, ID3D11Texture2D **tex);
+	static void GetTexture2DSize(ID3D11Texture2D *tex, XMFLOAT2 *size);
+	static void GetTexture2DSize(ID3D11ShaderResourceView *srv, XMFLOAT2 *size);
 private:
 	class StaticInit
 	{

@@ -21,6 +21,8 @@ Window::Window(LPCSTR title, int width, int height)
 {
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(nullptr);
 
+	int clientWidth = width;
+	int clientHeight = height;
 	clientToScreen(&width, &height, WS_OVERLAPPEDWINDOW);
 
 	handle = CreateWindow(WND_CLASSNAME, title, WS_OVERLAPPEDWINDOW,
@@ -30,7 +32,7 @@ Window::Window(LPCSTR title, int width, int height)
 	SetWindowLongPtr(handle, GWLP_USERDATA, (LONG_PTR)this);
 
 	ShowWindow(handle, SW_SHOW);
-	init(handle, (float)width, (float)height);
+	init(handle, (float)clientWidth, (float)clientHeight);
 
 	windowCount++;
 }

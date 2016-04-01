@@ -520,6 +520,47 @@ void D3D11Renderer::Unmap(ID3D11Resource *res)
 	DeviceContext->Unmap(res, 0);
 }
 
+void D3D11Renderer::GetTexture2D(ID3D11ShaderResourceView *srv, ID3D11Texture2D **tex)
+{
+	ID3D11Resource *res;
+	srv->GetResource(&res);
+
+	HRESULT hr = res->QueryInterface(__uuidof(ID3D11Texture2D), (void**)tex);
+
+	if (FAILED(hr))
+	{
+		PrintError(hr);
+		*tex = nullptr;
+	}
+	
+	SafeRelease(res);
+}
+
+void D3D11Renderer::GetTexture2DSize(ID3D11Texture2D *tex, XMFLOAT2 *size)
+{
+	if (tex)
+	{
+		D3D11_TEXTURE2D_DESC desc;
+		tex->GetDesc(&desc);
+
+		size->x = desc.Width;
+		size->y = desc.Height;
+	}
+	else
+	{
+		size->x = 0;
+		size->y = 0;
+	}
+}
+
+void D3D11Renderer::GetTexture2DSize(ID3D11ShaderResourceView *srv, XMFLOAT2 *size)
+{
+	ID3D11Texture2D *tex;
+	GetTexture2D(srv, &tex);
+	GetTexture2DSize(tex, size);
+	SafeRelease(tex);
+}
+
 void D3D11Renderer::MakeWindowAssociation(HWND hwnd, UINT flag)
 {
 	IDXGIFactory *dxgiFactory;
@@ -529,7 +570,5 @@ void D3D11Renderer::MakeWindowAssociation(HWND hwnd, UINT flag)
 	SafeRelease(dxgiFactory);
 
 	if (FAILED(hr))
-	{
 		PrintError(hr);
-	}
 }
