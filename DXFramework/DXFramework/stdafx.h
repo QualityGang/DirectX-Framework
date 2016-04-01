@@ -3,6 +3,7 @@
 // Remove unused features
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#define _COM_NO_STANDARD_GUIDS_
 
 // Windows headers
 #include <Windows.h>
@@ -18,14 +19,15 @@
 #define FREEIMAGE_LIB
 #include <FreeImage.h>
 
-//#include <ft2build.h>
-//#include FT_FREETYPE_H
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 
 // Utilities
 #include "Logger.h"
 
 #define PrintError(hr) do { _com_error err(hr); error_stream << err.ErrorMessage() << " " << __FILE__ << " " << __LINE__ << std::endl; } while (false)
+#define SafeAddRef(ptr) do { if (ptr) { ptr->AddRef(); } } while (false)
 #define SafeRelease(ptr) do { if (ptr) { ptr->Release(); ptr = nullptr; } } while (false)
 
 #define DEPRECATED __declspec(deprecated)
@@ -44,9 +46,9 @@ using namespace DirectX;
 
 #ifdef _DEBUG
 #pragma comment(lib, "FreeImageLibd.lib")
-//#pragma comment(lib, "freetype255d.lib")
+#pragma comment(lib, "freetype255d.lib")
 #else
 #pragma comment(lib, "FreeImageLib.lib")
-//#pragma comment(lib, "freetype255.lib")
+#pragma comment(lib, "freetype255.lib")
 #endif
 

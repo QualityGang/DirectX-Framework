@@ -5,17 +5,21 @@
 
 #include "D3D11Renderer.h"
 
+#include "string_ext.h"
+
 #include "SpriteVS.h"
 #include "SpritePS.h"
 
 #include "Settings.h"
 
+
 #define NUM_VERTICES 4
+#define NUM_INDICES  6
 
 
 SpriteBatch::StaticInit SpriteBatch::__static_init;
 
-ID3D11Buffer		*SpriteBatch::VertexBuffer, *SpriteBatch::InstanceBuffer, *SpriteBatch::ConstantBuffer;
+ID3D11Buffer		*SpriteBatch::VertexBuffer, *SpriteBatch::IndexBuffer, *SpriteBatch::ConstantBuffer;
 ID3D11VertexShader	*SpriteBatch::VertexShader;
 ID3D11PixelShader	*SpriteBatch::PixelShader;
 ID3D11InputLayout	*SpriteBatch::InputLayout;
@@ -40,41 +44,47 @@ SpriteBatch::StaticInit::StaticInit()
 	// Create input layout
 	D3D11_INPUT_ELEMENT_DESC elements[] =
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR"   , 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
-		{ "WORLD",	  0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "WORLD",	  1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "WORLD",	  2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "WORLD",	  3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "TEXCOORD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 4, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	D3D11Renderer::CreateInputLayout(g_SpriteVS, sizeof(g_SpriteVS), elements, _countof(elements), &InputLayout);
 
 	// Create vertex buffer
-	SpriteVertex v[NUM_VERTICES] = 
+	D3D11Renderer::CreateBuffer(D3D11_BIND_VERTEX_BUFFER, sizeof(SpriteVertex) * BATCH_SIZE * NUM_VERTICES,
+								D3D11_USAGE_DYNAMIC, nullptr, &VertexBuffer);
+
+	// Create index buffer
+	WORD indices[BATCH_SIZE * NUM_INDICES];
+
+	for (UINT i = 0; i < BATCH_SIZE; i++)
 	{
-		// x     y      u     v
-		{ 0.0f, 1.0f,  0.0f, 1.0f },
-		{ 0.0f, 0.0f,  0.0f, 0.0f },
-		{ 1.0f, 1.0f,  1.0f, 1.0f },
-		{ 1.0f, 0.0f,  1.0f, 0.0f }
-	};
+		indices[i * NUM_INDICES + 0] = i * NUM_VERTICES + 0;
+		indices[i * NUM_INDICES + 1] = i * NUM_VERTICES + 1;
+		indices[i * NUM_INDICES + 2] = i * NUM_VERTICES + 2;
 
-	D3D11Renderer::CreateBuffer(D3D11_BIND_VERTEX_BUFFER, sizeof(SpriteVertex) * NUM_VERTICES, D3D11_USAGE_IMMUTABLE, v, &VertexBuffer);
+		indices[i * NUM_INDICES + 3] = i * NUM_VERTICES + 0;
+		indices[i * NUM_INDICES + 4] = i * NUM_VERTICES + 2;
+		indices[i * NUM_INDICES + 5] = i * NUM_VERTICES + 3;
+	}
 
-	// Create instance buffer
-	D3D11Renderer::CreateBuffer(D3D11_BIND_VERTEX_BUFFER, sizeof(SpriteInstance) * BATCH_SIZE, D3D11_USAGE_DYNAMIC, nullptr, &InstanceBuffer);
+	D3D11Renderer::CreateBuffer(D3D11_BIND_INDEX_BUFFER, sizeof(WORD) * BATCH_SIZE * NUM_INDICES, D3D11_USAGE_IMMUTABLE, indices, &IndexBuffer);
 
 	// Create constant buffer
-	static_assert(sizeof(XMMATRIX) % 16 == 0, "constant buffer must be alligned(16)");
+	static_assert(sizeof(XMMATRIX) % 16 == 0, "constant buffer must be aligned(16)");
 	D3D11Renderer::CreateBuffer(D3D11_BIND_CONSTANT_BUFFER, sizeof(XMMATRIX), D3D11_USAGE_DYNAMIC, nullptr, &ConstantBuffer);
 }
 
 SpriteBatch::StaticInit::~StaticInit()
 {
 	SafeRelease(VertexBuffer);
-	SafeRelease(InstanceBuffer);
+	SafeRelease(IndexBuffer);
 	SafeRelease(ConstantBuffer);
 	SafeRelease(VertexShader);
 	SafeRelease(PixelShader);
@@ -126,23 +136,34 @@ void SpriteBatch::end()
 
 	beginEndPair = false;
 
-	if (sortMode == SpriteSortMode::Immediate)
-	{
-		ID3D11ShaderResourceView *nullSrv = nullptr;
-		D3D11Renderer::DeviceContext->PSSetShaderResources(0, 1, &nullSrv);
-		Immediate = false;
-		return;
-	}
-
 	// Sort the sprites
 	switch (sortMode)
 	{
 		case SpriteSortMode::Texture:
-			std::sort(spriteList.begin(), spriteList.end(), [](Sprite &sprite1, Sprite &sprite2)
+			std::sort(spriteList.begin(), spriteList.end(),
+			[](Sprite &sprite1, Sprite &sprite2)
 			{
 				return sprite1.srv < sprite2.srv;
 			});
 			break;
+		case SpriteSortMode::BackToFront:
+			std::sort(spriteList.begin(), spriteList.end(),
+				[](Sprite &sprite1, Sprite &sprite2)
+			{
+				return sprite1.depth > sprite2.depth;
+			});
+			break;
+		case SpriteSortMode::FrontToBack:
+			std::sort(spriteList.begin(), spriteList.end(),
+				[](Sprite &sprite1, Sprite &sprite2)
+			{
+				return sprite1.depth < sprite2.depth;
+			});
+			break;
+		case SpriteSortMode::Immediate:
+			Immediate = false;
+			finalize();
+			return;
 	}
 
 	prepare();
@@ -175,9 +196,7 @@ void SpriteBatch::end()
 		}
 	}
 
-	// Unbind the shader resource view (conflicts with render to texture)
-	ID3D11ShaderResourceView *nullSrv = nullptr;
-	D3D11Renderer::DeviceContext->PSSetShaderResources(0, 1, &nullSrv);
+	finalize();
 }
 
 void SpriteBatch::prepare()
@@ -194,11 +213,11 @@ void SpriteBatch::prepare()
 	}
 
 	// Configure pipeline
-	ID3D11Buffer *buffers[] = { VertexBuffer, InstanceBuffer };
-	UINT strides[] = { sizeof(SpriteVertex), sizeof(SpriteInstance) };
-	UINT offsets[] = { 0, 0 };
+	UINT stride = sizeof(SpriteVertex);
+	UINT offset = 0;
 
-	D3D11Renderer::DeviceContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
+	D3D11Renderer::DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
+	D3D11Renderer::DeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	D3D11Renderer::DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
 
 	D3D11Renderer::DeviceContext->VSSetShader(VertexShader, nullptr, 0);
@@ -213,38 +232,78 @@ void SpriteBatch::prepare()
 	ID3D11RenderTargetView *rtv = renderTarget->getRenderTargetView();
 	D3D11Renderer::DeviceContext->OMSetRenderTargets(1, &rtv, renderTarget->getDepthStencilView());
 	D3D11Renderer::DeviceContext->RSSetViewports(1, &renderTarget->getViewport());
-	D3D11Renderer::DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	D3D11Renderer::DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	if (setCustomShaders)
 		setCustomShaders();
 }
 
+void SpriteBatch::finalize()
+{
+	// Unbind the shader resource view (conflicts with render to texture)
+	ID3D11ShaderResourceView *nullSrv = nullptr;
+	D3D11Renderer::DeviceContext->PSSetShaderResources(0, 1, &nullSrv);
+}
+
 void SpriteBatch::drawBatch(UINT startIndex, UINT count)
 {
-	// Update instance buffer
-	SpriteInstance *instBuff;
-	D3D11Renderer::Map(InstanceBuffer, D3D11_MAP_WRITE_DISCARD, (void**)&instBuff);
-
-	if (instBuff)
+	// Update vertex buffer
+	SpriteVertex *vertBuff;
+	D3D11Renderer::Map(VertexBuffer, D3D11_MAP_WRITE_DISCARD, (void**)&vertBuff);
+	
+	if (vertBuff)
 	{
 		for (UINT i = 0; i < count; i++)
 		{
 			const Sprite &sprite = spriteList[startIndex + i];
 
-			XMVECTOR scaling = XMVectorSet(sprite.size.x, sprite.size.y, 1.0f, 1.0f);
-			XMVECTOR origin = XMVectorSet(sprite.size.x / 2.0f, sprite.size.y / 2.0f, 0.0f, 0.0f);
-			XMVECTOR translation = XMVectorSet(sprite.position.x, sprite.position.y, 0.0f, 0.0f);
+			XMFLOAT2 texSize;
+			D3D11Renderer::GetTexture2DSize(sprite.srv, &texSize);
 			
-			instBuff[i].worldMatrix = XMMatrixAffineTransformation2D(scaling, origin,
-														-sprite.degrees, translation);
-			instBuff[i].worldMatrix = XMMatrixTranspose(instBuff[i].worldMatrix);
+			if (texSize.x == 0 || texSize.y == 0)
+			{
+				error_stream << "invalid texture" << std::endl;
+				continue;
+			}
+
+			float srcLeftNorm = sprite.src.x / texSize.x;
+			float srcTopNorm = sprite.src.y / texSize.y;
+			float srcRightNorm = srcLeftNorm + sprite.src.width / texSize.x;
+			float srcBottomNorm = srcTopNorm + sprite.src.height / texSize.y;
+
+			switch (sprite.effect)
+			{
+				case SpriteEffect::FlipHorizontal:
+					std::swap(srcLeftNorm, srcRightNorm);
+					break;
+				case SpriteEffect::FlipVertical:
+					std::swap(srcTopNorm, srcBottomNorm);
+					break;
+				case SpriteEffect::FlipBoth:
+					std::swap(srcLeftNorm, srcRightNorm);
+					std::swap(srcTopNorm, srcBottomNorm);
+					break;
+			}
+
+			vertBuff[i * NUM_VERTICES + 0] = SpriteVertex(0.0f, 1.0f, srcLeftNorm,  srcBottomNorm, sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a); // bot left;
+			vertBuff[i * NUM_VERTICES + 1] = SpriteVertex(0.0f, 0.0f, srcLeftNorm,  srcTopNorm,    sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a); // top left
+			vertBuff[i * NUM_VERTICES + 2] = SpriteVertex(1.0f, 0.0f, srcRightNorm, srcTopNorm,    sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a); // top right
+			vertBuff[i * NUM_VERTICES + 3] = SpriteVertex(1.0f, 1.0f, srcRightNorm, srcBottomNorm, sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a); // bot right
+
+			XMVECTOR scaling = XMVectorSet(sprite.dest.width, sprite.dest.height, 1.0f, 1.0f);
+			XMVECTOR origin = XMVectorSet(sprite.dest.width / 2.0f, sprite.dest.height / 2.0f, 0.0f, 0.0f);
+			XMVECTOR translation = XMVectorSet(sprite.dest.x, sprite.dest.y, sprite.depth, 0.0f);
+
+			XMMATRIX worldMatrix = XMMatrixAffineTransformation2D(scaling, origin, -sprite.degrees, translation);
+			worldMatrix = XMMatrixTranspose(worldMatrix);
+				
+			for (UINT j = 0; j < NUM_VERTICES; j++)
+				vertBuff[i * NUM_VERTICES + j].world = worldMatrix;
 		}
 
-		D3D11Renderer::Unmap(InstanceBuffer);
+		D3D11Renderer::Unmap(VertexBuffer);
+		D3D11Renderer::DeviceContext->DrawIndexed(count * NUM_INDICES, 0, 0);
 	}
-
-	// Draw batch
-	D3D11Renderer::DeviceContext->DrawInstanced(NUM_VERTICES, count, 0, 0);
 }
 
 UINT SpriteBatch::getBatchSize(UINT startIndex, UINT endIndex) const
@@ -263,6 +322,36 @@ UINT SpriteBatch::getBatchSize(UINT startIndex, UINT endIndex) const
 	return count;
 }
 
+int SpriteBatch::GetMaxAscent(LPCSTR str, const FontAtlas &atlas)
+{
+	int ascent = 0;
+
+	for (LPCSTR lpStr = str; *lpStr; lpStr++)
+	{
+		const FontAtlas::CharInfo *charInfo = atlas.getCharInfo(*lpStr);
+		
+		if (charInfo && charInfo->ascent > ascent)
+			ascent = charInfo->ascent;
+	}
+
+	return ascent;
+}
+
+int SpriteBatch::GetMaxDescent(LPCSTR str, const FontAtlas &atlas)
+{
+	int descent = 0;
+
+	for (LPCSTR lpStr = str; *lpStr; lpStr++)
+	{
+		const FontAtlas::CharInfo *charInfo = atlas.getCharInfo(*lpStr);
+
+		if (charInfo && charInfo->descent > descent)
+			descent = charInfo->descent;
+	}
+
+	return descent;
+}
+
 void SpriteBatch::draw(const Sprite &sprite)
 {
 	if (!beginEndPair)
@@ -273,7 +362,11 @@ void SpriteBatch::draw(const Sprite &sprite)
 
 	if (sortMode == SpriteSortMode::Immediate)
 	{
-		spriteList.insert(spriteList.begin(), sprite);
+		if (spriteList.empty())
+			spriteList.push_back(sprite);
+		else
+			spriteList[0] = sprite;
+
 		D3D11Renderer::DeviceContext->PSSetShaderResources(0, 1, &sprite.srv);
 		drawBatch(0, 1);
 
@@ -281,4 +374,85 @@ void SpriteBatch::draw(const Sprite &sprite)
 	}
 
 	spriteList.push_back(sprite);
+}
+
+void SpriteBatch::drawText(const Text &text, const FontAtlas &atlas)
+{
+	if (!beginEndPair)
+	{
+		error_stream << "begin-end must be paired" << std::endl;
+		return;
+	}
+
+	const Font *font = atlas.getFont();
+	
+	if (!font)
+		return;
+
+	FT_Face face = font->getFace();
+
+	FT_UInt prevGlyphIndex = 0;
+	XMFLOAT2 pen(0, 0);
+	
+	std::vector<std::string> lines;
+	stde::string_split(text.str, "\n", &lines);
+
+	UINT currLine = 0;
+	int maxAscent = GetMaxAscent(lines[currLine].c_str(), atlas);
+	int maxDescent = GetMaxDescent(lines[currLine].c_str(), atlas);
+
+	for (LPCSTR lpStr = text.str; *lpStr; lpStr++)
+	{
+		switch(*lpStr)
+		{
+			case ' ':
+				pen.x += atlas.getCharInfo(' ')->advance.x;
+				continue;
+			case '\t':
+				pen.x += atlas.getCharInfo(' ')->advance.x * 3;
+				continue;
+			case '\n':
+				pen.x = 0;
+				pen.y += text.lineGap + maxDescent + maxAscent;
+				currLine++;
+				maxAscent  = GetMaxAscent(lines[currLine].c_str(), atlas);
+				maxDescent = GetMaxDescent(lines[currLine].c_str(), atlas);
+				continue;
+		}
+
+		const FontAtlas::CharInfo *charInfo = atlas.getCharInfo(*lpStr);
+
+		if (!charInfo)
+		{
+			error_stream << "Character missing from FontAtlas " << *lpStr << std::endl;
+			pen.x += atlas.getCharInfo(' ')->advance.x;
+			continue;
+		}
+
+		FT_UInt glyphIndex = FT_Get_Char_Index(face, *lpStr);
+		pen.x += font->getKerning(prevGlyphIndex, glyphIndex);
+
+		ID3D11ShaderResourceView *srv;
+		atlas.getShaderResourceView(&srv);
+
+		Sprite sprite;
+		sprite.dest.x = text.position.x + pen.x + charInfo->rect.x;
+		sprite.dest.y = text.position.y + pen.y + maxAscent - charInfo->rect.y;
+		sprite.dest.width = (float)charInfo->rect.width;
+		sprite.dest.height = (float)charInfo->rect.height;
+		sprite.src.x = (float)charInfo->charPos.x;
+		sprite.src.y = (float)charInfo->charPos.y;
+		sprite.src.width = (float)charInfo->rect.width;
+		sprite.src.height = (float)charInfo->rect.height;
+		sprite.degrees = 0.0f;
+		sprite.depth = text.position.z;
+		sprite.effect = SpriteEffect::None;
+		sprite.color = text.color;
+		sprite.srv = srv;
+
+		draw(sprite);
+
+		pen.x += charInfo->advance.x;
+		prevGlyphIndex = glyphIndex;
+	}
 }
