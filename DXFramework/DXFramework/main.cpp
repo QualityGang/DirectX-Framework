@@ -7,6 +7,7 @@
 #include "Window.h"
 #include "SpriteBatch.h"
 #include "RenderTexture.h"
+#include "TextMetrics.h"
 
 constexpr long double operator"" _deg(long double deg)
 {
@@ -78,8 +79,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Font font("arial.ttf", 86);
 	FontAtlas atlas(FA_ALLLOWERCASE FA_ALLUPPERCASE, &font);
+	
+	XMUINT2 textSize;
+	TextMetrics::GetSize(text, atlas, &textSize);
 
-	Bitmap bmp3(675, 300);
+	Bitmap bmp3(textSize.x, textSize.y);
 
 	RenderTexture renderTexture(bmp3);
 	ID3D11ShaderResourceView *srv3;

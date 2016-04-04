@@ -83,9 +83,6 @@ private:
 	void drawBatch(UINT startIndex, UINT count);
 	UINT getBatchSize(UINT startIndex, UINT endIndex) const;
 
-	static int GetMaxAscent(LPCSTR str, const FontAtlas &atlas);
-	static int GetMaxDescent(LPCSTR str, const FontAtlas &atlas);
-
 	ALIGN(16)
 	struct SpriteVertex : AlignedNew<16>
 	{

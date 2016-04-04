@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "D3D11Renderer.h"
+#include "TextMetrics.h"
 
 #include "string_ext.h"
 
@@ -322,36 +323,6 @@ UINT SpriteBatch::getBatchSize(UINT startIndex, UINT endIndex) const
 	return count;
 }
 
-int SpriteBatch::GetMaxAscent(LPCSTR str, const FontAtlas &atlas)
-{
-	int ascent = 0;
-
-	for (LPCSTR lpStr = str; *lpStr; lpStr++)
-	{
-		const FontAtlas::CharInfo *charInfo = atlas.getCharInfo(*lpStr);
-		
-		if (charInfo && charInfo->ascent > ascent)
-			ascent = charInfo->ascent;
-	}
-
-	return ascent;
-}
-
-int SpriteBatch::GetMaxDescent(LPCSTR str, const FontAtlas &atlas)
-{
-	int descent = 0;
-
-	for (LPCSTR lpStr = str; *lpStr; lpStr++)
-	{
-		const FontAtlas::CharInfo *charInfo = atlas.getCharInfo(*lpStr);
-
-		if (charInfo && charInfo->descent > descent)
-			descent = charInfo->descent;
-	}
-
-	return descent;
-}
-
 void SpriteBatch::draw(const Sprite &sprite)
 {
 	if (!beginEndPair)
@@ -398,8 +369,8 @@ void SpriteBatch::drawText(const Text &text, const FontAtlas &atlas)
 	stde::string_split(text.str, "\n", &lines);
 
 	UINT currLine = 0;
-	int maxAscent = GetMaxAscent(lines[currLine].c_str(), atlas);
-	int maxDescent = GetMaxDescent(lines[currLine].c_str(), atlas);
+	int maxAscent = TextMetrics::GetMaxAscent(lines[currLine].c_str(), atlas);
+	int maxDescent = TextMetrics::GetMaxDescent(lines[currLine].c_str(), atlas);
 
 	for (LPCSTR lpStr = text.str; *lpStr; lpStr++)
 	{
@@ -415,8 +386,8 @@ void SpriteBatch::drawText(const Text &text, const FontAtlas &atlas)
 				pen.x = 0;
 				pen.y += text.lineGap + maxDescent + maxAscent;
 				currLine++;
-				maxAscent  = GetMaxAscent(lines[currLine].c_str(), atlas);
-				maxDescent = GetMaxDescent(lines[currLine].c_str(), atlas);
+				maxAscent  = TextMetrics::GetMaxAscent(lines[currLine].c_str(), atlas);
+				maxDescent = TextMetrics::GetMaxDescent(lines[currLine].c_str(), atlas);
 				continue;
 		}
 

@@ -92,6 +92,7 @@
     <ClInclude Include="SpritePS.h" />
     <ClInclude Include="SpriteVS.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TextMetrics.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +115,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="string_ext.cpp" />
+    <ClCompile Include="TextMetrics.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
