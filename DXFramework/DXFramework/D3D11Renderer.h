@@ -12,8 +12,8 @@ public:
 	static void CreateSwapChain(HWND hwnd, UINT width, UINT height, IDXGISwapChain **swapChain);
 	static void CreateRenderTargetView(ID3D11Resource *res, ID3D11RenderTargetView **rtv);
 	static void CreateRenderTargetView(IDXGISwapChain *swapChain, ID3D11RenderTargetView **rtv);
-	static void CreateDepthStencilView(UINT width, UINT height, ID3D11DepthStencilView **dsv);
-	static void CreateTexture2D(UINT width, UINT height, DXGI_FORMAT format, UINT bindFlags, D3D11_USAGE usage, void *initData, UINT rowWidth, ID3D11Texture2D **tex);
+	static void CreateDepthStencilView(UINT width, UINT height, UINT sampleCount, UINT sampleQuality, ID3D11DepthStencilView **dsv);
+	static void CreateTexture2D(UINT width, UINT height, DXGI_FORMAT format, UINT bindFlags, D3D11_USAGE usage, UINT sampleCount, UINT sampleQuality, void *initData, UINT rowWidth, ID3D11Texture2D **tex);
 	static void CreateShaderResourceView(ID3D11Resource *res, ID3D11ShaderResourceView **srv);
 	static void CreateVertexShader(const void *bytecode, UINT len, ID3D11VertexShader **vs);
 	static void CreatePixelShader(const void *bytecode, UINT len, ID3D11PixelShader **ps);

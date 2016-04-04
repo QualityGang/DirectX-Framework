@@ -20,7 +20,8 @@ public:
 
 	UINT getWidth() const;
 	UINT getHeight() const;
-	void getShaderResourceView(ID3D11ShaderResourceView **srv);
+	void getTexture2D(ID3D11Texture2D **tex) const;
+	void getShaderResourceView(ID3D11ShaderResourceView **srv) const;
 private:
 	bool updateTexture() const;
 
@@ -29,7 +30,7 @@ private:
 
 	mutable bool dirty = true;
 	
-	mutable ID3D11Texture2D *texture2D = nullptr;
+	mutable ID3D11Texture2D *texture = nullptr;
 	mutable ID3D11ShaderResourceView *shaderResourceView = nullptr;
 };
 

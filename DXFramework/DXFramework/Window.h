@@ -41,10 +41,13 @@ public:
 	void addOnResizeListener(OnResizeListener listener);
 	void removeOnResizeListener(int index);
 
+	void resize(int width, int height);
+	void present();
 	void close();
 
 	static Window* GetWindow(HWND hwnd);
 private:
+	IDXGISwapChain *swapChain;
 	HWND handle;
 	XMINT2 minSize, minWndSize;
 	bool keys[NUM_KEYCODES];

@@ -6,6 +6,7 @@
 
 #include "Window.h"
 #include "SpriteBatch.h"
+#include "RenderTexture.h"
 
 constexpr long double operator"" _deg(long double deg)
 {
@@ -29,7 +30,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	D3D11Renderer::CreateBSAlphaBlend(&bs);
 
 	ID3D11SamplerState *ss;
-	D3D11Renderer::CreateSSPointClamp(&ss);
+	D3D11Renderer::CreateSSLinearClamp(&ss);
 
 	ID3D11DepthStencilState *dss;
 	D3D11Renderer::CreateDSSDepthDefault(&dss);
@@ -78,6 +79,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Font font("arial.ttf", 86);
 	FontAtlas atlas(FA_ALLLOWERCASE FA_ALLUPPERCASE, &font);
 
+	Bitmap bmp3(675, 300);
+
+	RenderTexture renderTexture(bmp3);
+	ID3D11ShaderResourceView *srv3;
+	renderTexture.getShaderResourceView(&srv3);
+
+	Sprite sprite3;
+	sprite3.dest.set(100, 50, renderTexture.getViewport().Width, renderTexture.getViewport().Height);
+	sprite3.src.set(0, 0, renderTexture.getViewport().Width, renderTexture.getViewport().Height);
+	sprite3.degrees = (float)0.0_deg;
+	sprite3.depth = 0;
+	sprite3.effect = SpriteEffect::None;
+	sprite3.color.set(1, 1, 1, 1);
+	sprite3.srv = srv3;
+
 	std::thread renderThread(
 	[&]() -> void
 	{
@@ -118,11 +134,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			sprite.dest.y = sinf(angle) * 50 + 150;
 			angle += XM_PI * 0.08f;
 
+			renderTexture.clear(0, 1, 0, 1);
+			batch.begin(renderTexture, SpriteSortMode::Deferred, bs, ss, dss, rs, nullptr);
+			batch.drawText(text, atlas);
+			batch.end();
+
 			window.clear(1.0f, 0.0f, 0.0f, 0.0f);
 			batch.begin(window, SpriteSortMode::Deferred, bs, ss, dss, rs, nullptr);
 			batch.draw(sprite);
 			batch.draw(sprite2);
-			batch.drawText(text, atlas);
+			batch.draw(sprite3);
 			batch.end();
 			window.present();
 		}

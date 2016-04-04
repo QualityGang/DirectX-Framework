@@ -77,7 +77,7 @@ void D3D11Renderer::CreateRenderTargetView(IDXGISwapChain *swapChain, ID3D11Rend
 	SafeRelease(backBuffer);
 }
 
-void D3D11Renderer::CreateDepthStencilView(UINT width, UINT height, ID3D11DepthStencilView **dsv)
+void D3D11Renderer::CreateDepthStencilView(UINT width, UINT height, UINT sampleCount, UINT sampleQuality, ID3D11DepthStencilView **dsv)
 {
 	D3D11_TEXTURE2D_DESC desc;
 	ZeroMemory(&desc, sizeof(desc));
@@ -87,8 +87,8 @@ void D3D11Renderer::CreateDepthStencilView(UINT width, UINT height, ID3D11DepthS
 	desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	desc.Width = width;
 	desc.Height = height;
-	desc.SampleDesc.Count = SAMPLE_COUNT;
-	desc.SampleDesc.Quality = SAMPLE_QUALITY;
+	desc.SampleDesc.Count = sampleCount;
+	desc.SampleDesc.Quality = sampleQuality;
 
 	ID3D11Texture2D *buffer;
 	HRESULT hr = Device->CreateTexture2D(&desc, nullptr, &buffer);
@@ -110,7 +110,7 @@ void D3D11Renderer::CreateDepthStencilView(UINT width, UINT height, ID3D11DepthS
 	}
 }
 
-void D3D11Renderer::CreateTexture2D(UINT width, UINT height, DXGI_FORMAT format, UINT bindFlags, D3D11_USAGE usage, void *initData, UINT rowWidth, ID3D11Texture2D **tex)
+void D3D11Renderer::CreateTexture2D(UINT width, UINT height, DXGI_FORMAT format, UINT bindFlags, D3D11_USAGE usage, UINT sampleCount, UINT sampleQuality, void *initData, UINT rowWidth, ID3D11Texture2D **tex)
 {
 	D3D11_TEXTURE2D_DESC desc;
 	desc.Width = width;
@@ -118,8 +118,8 @@ void D3D11Renderer::CreateTexture2D(UINT width, UINT height, DXGI_FORMAT format,
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.Format = format;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
+	desc.SampleDesc.Count = sampleCount;
+	desc.SampleDesc.Quality = sampleQuality;
 	desc.BindFlags = bindFlags;
 	desc.MiscFlags = 0;
 

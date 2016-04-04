@@ -22,7 +22,7 @@ Bitmap::Bitmap(UINT width, UINT height, const BYTE *pixels) :
 Bitmap::~Bitmap()
 {
 	delete[] buffer;
-	SafeRelease(texture2D);
+	SafeRelease(texture);
 	SafeRelease(shaderResourceView);
 }
 
@@ -30,7 +30,7 @@ Bitmap::Bitmap(const Bitmap &other)
 {
 	width = other.width;
 	height = other.height;
-	texture2D = nullptr;
+	texture = nullptr;
 	shaderResourceView = nullptr;
 
 	UINT size = width * height * 4;
@@ -43,13 +43,13 @@ Bitmap::Bitmap(Bitmap &&other)
 	buffer = other.buffer;
 	width = other.width;
 	height = other.height;
-	texture2D = other.texture2D;
+	texture = other.texture;
 	shaderResourceView = other.shaderResourceView;
 	
 	other.buffer = nullptr;
 	other.width = 0;
 	other.height = 0;
-	other.texture2D = nullptr;
+	other.texture = nullptr;
 	other.shaderResourceView = nullptr;
 }
 
@@ -66,20 +66,20 @@ Bitmap& Bitmap::operator=(Bitmap &&other)
 	if (this != &other)
 	{
 		delete[] buffer;
-		SafeRelease(texture2D);
+		SafeRelease(texture);
 		SafeRelease(shaderResourceView);
 
 		buffer = other.buffer;
 		width = other.width;
 		height = other.height;
 		dirty = other.dirty;
-		texture2D = other.texture2D;
+		texture = other.texture;
 		shaderResourceView = other.shaderResourceView;
 
 		other.buffer = nullptr;
 		other.width = 0;
 		other.height = 0;
-		other.texture2D = nullptr;
+		other.texture = nullptr;
 		other.shaderResourceView = nullptr;
 	}
 
@@ -126,7 +126,21 @@ UINT Bitmap::getHeight() const
 	return height;
 }
 
-void Bitmap::getShaderResourceView(ID3D11ShaderResourceView **srv)
+void Bitmap::getTexture2D(ID3D11Texture2D **tex) const
+{
+	if (dirty)
+		if (updateTexture())
+			dirty = false;
+		else
+		{
+			*tex = nullptr;
+			return;
+		}
+
+	*tex = texture;
+}
+
+void Bitmap::getShaderResourceView(ID3D11ShaderResourceView **srv) const
 {
 	if (dirty)
 		if (updateTexture())
@@ -145,11 +159,11 @@ bool Bitmap::updateTexture() const
 	if (!buffer)
 		return false;
 
-	if (texture2D)
+	if (texture)
 	{
 		BYTE *texBuff;
 		UINT rowWidth;
-		D3D11Renderer::Map(texture2D, D3D11_MAP_WRITE_DISCARD, (void**)&texBuff, &rowWidth);
+		D3D11Renderer::Map(texture, D3D11_MAP_WRITE_DISCARD, (void**)&texBuff, &rowWidth);
 
 		if (!texBuff)
 			return false;
@@ -163,7 +177,7 @@ bool Bitmap::updateTexture() const
 			buffer += width * 4;
 		}
 
-		D3D11Renderer::Unmap(texture2D);
+		D3D11Renderer::Unmap(texture);
 
 		return true;
 	}
@@ -171,12 +185,12 @@ bool Bitmap::updateTexture() const
 	{
 		D3D11Renderer::CreateTexture2D(width, height,
 			DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_SHADER_RESOURCE,
-			D3D11_USAGE_DYNAMIC, buffer, width * 4, &texture2D);
+			D3D11_USAGE_DYNAMIC, 1, 0, buffer, width * 4, &texture);
 
-		if (!texture2D)
+		if (!texture)
 			return false;
 		
-		D3D11Renderer::CreateShaderResourceView(texture2D, &shaderResourceView);
+		D3D11Renderer::CreateShaderResourceView(texture, &shaderResourceView);
 		
 		return shaderResourceView != nullptr;
 	}

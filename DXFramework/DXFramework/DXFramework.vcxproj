@@ -77,6 +77,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontAtlas.h" />
     <ClInclude Include="FT.h" />
+    <ClInclude Include="RenderTexture.h" />
     <ClInclude Include="stde_common.h" />
     <ClInclude Include="string_ext.h" />
     <ClInclude Include="Keys.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OutputEnum.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="SpriteBatch.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

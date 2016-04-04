@@ -74,6 +74,9 @@
     <ClInclude Include="stde_common.h">
       <Filter>STL Extensions</Filter>
     </ClInclude>
+    <ClInclude Include="RenderTexture.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="string_ext.cpp">
       <Filter>STL Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTexture.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
