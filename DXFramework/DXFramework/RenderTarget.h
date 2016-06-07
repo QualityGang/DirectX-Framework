@@ -11,23 +11,16 @@ public:
 	virtual ~RenderTarget();
 
 	void clear(float r, float g, float b, float a);
-	void present();
-
-	void resize(int width, int height);
+	void updateSize(float width, float height);
 
 	ID3D11RenderTargetView* getRenderTargetView() const;
 	ID3D11DepthStencilView* getDepthStencilView() const;
 	const XMMATRIX& getProjectionMatrix() const;
 	const D3D11_VIEWPORT& getViewport() const;
-protected:
-	void init(HWND hwnd, int width, int height);
-	
-	IDXGISwapChain *swapChain = nullptr;
+protected:	
 	ID3D11RenderTargetView *renderTargetView = nullptr;
 	ID3D11DepthStencilView *depthStencilView = nullptr;
 private:
-	void updateSize(float width, float height);
-
 	XMMATRIX projectionMatrix;
 	D3D11_VIEWPORT viewport;
 };

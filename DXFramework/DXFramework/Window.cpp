@@ -2,6 +2,7 @@
 #include "Window.h"
 
 #include "OutputEnum.h"
+#include "Settings.h"
 
 
 #define IsMenuActiveByAlt(lParam) ((lParam >> 16) <= 0)
@@ -21,6 +22,8 @@ Window::Window(LPCSTR title, int width, int height)
 {
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(nullptr);
 
+	int clientWidth = width;
+	int clientHeight = height;
 	clientToScreen(&width, &height, WS_OVERLAPPEDWINDOW);
 
 	handle = CreateWindow(WND_CLASSNAME, title, WS_OVERLAPPEDWINDOW,
@@ -30,7 +33,12 @@ Window::Window(LPCSTR title, int width, int height)
 	SetWindowLongPtr(handle, GWLP_USERDATA, (LONG_PTR)this);
 
 	ShowWindow(handle, SW_SHOW);
-	init(handle, (float)width, (float)height);
+	
+	D3D11Renderer::CreateSwapChain(handle, clientWidth, clientHeight, &swapChain);
+	D3D11Renderer::CreateRenderTargetView(swapChain, &renderTargetView);
+	D3D11Renderer::CreateDepthStencilView(clientWidth, clientHeight, SAMPLE_COUNT, SAMPLE_QUALITY, &depthStencilView);
+
+	updateSize((float)clientWidth, (float)clientHeight);
 
 	windowCount++;
 }
@@ -41,6 +49,10 @@ Window::~Window()
 		setFullscreen(false);
 
 	handle = nullptr;
+
+	SafeRelease(swapChain);
+	SafeRelease(renderTargetView);
+	SafeRelease(depthStencilView);
 }
 
 Window::StaticInit::StaticInit()
@@ -231,6 +243,32 @@ void Window::addOnResizeListener(OnResizeListener listener)
 void Window::removeOnResizeListener(int index)
 {
 	onResizeListeners.erase(onResizeListeners.begin() + index);
+}
+
+void Window::resize(int width, int height)
+{
+	updateSize((float)width, (float)height);
+
+	if (width == 0 || height == 0)
+		return;
+
+	//D3D11Renderer::DeviceContext->ClearState();
+	D3D11Renderer::DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+	SafeRelease(renderTargetView);
+	SafeRelease(depthStencilView);
+
+	D3D11Renderer::ResizeSwapChain(swapChain, width, height);
+	D3D11Renderer::CreateRenderTargetView(swapChain, &renderTargetView);
+	D3D11Renderer::CreateDepthStencilView(width, height, SAMPLE_COUNT, SAMPLE_QUALITY, &depthStencilView);
+}
+
+void Window::present()
+{
+	HRESULT hr = swapChain->Present(1, 0);
+
+	if (FAILED(hr))
+		PrintError(hr);
 }
 
 void Window::close()

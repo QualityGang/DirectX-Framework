@@ -71,12 +71,20 @@
   <ItemGroup>
     <ClInclude Include="AlignedNew.h" />
     <ClInclude Include="Bitmap.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="D3D11Renderer.h" />
     <ClInclude Include="FI.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="FontAtlas.h" />
+    <ClInclude Include="FT.h" />
+    <ClInclude Include="RenderTexture.h" />
+    <ClInclude Include="stde_common.h" />
+    <ClInclude Include="string_ext.h" />
     <ClInclude Include="Keys.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="NonCopyable.h" />
     <ClInclude Include="OutputEnum.h" />
+    <ClInclude Include="Rect.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Settings.h" />
@@ -84,16 +92,21 @@
     <ClInclude Include="SpritePS.h" />
     <ClInclude Include="SpriteVS.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TextMetrics.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="D3D11Renderer.cpp" />
     <ClCompile Include="FI.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="FontAtlas.cpp" />
+    <ClCompile Include="FT.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OutputEnum.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="SpriteBatch.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -101,10 +114,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="string_ext.cpp" />
+    <ClCompile Include="TextMetrics.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="box.png" />
+    <Image Include="player.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="arial.ttf" />
+    <Font Include="Calibri.ttf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1472A16A-344C-4017-B0C6-38E44A9C5FD1}</ProjectGuid>
